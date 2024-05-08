@@ -10,10 +10,7 @@
 ## `.env` Configuration
 
 ```
-DOMAIN_URL="http://localhost:3000"
-
-//OpenAPI
-OPENAI_API_KEY=**********
+NEXT_PUBLIC_SERVER_URL="http://localhost:3000"
 
 // Clerk
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=**********
@@ -23,6 +20,7 @@ NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
 NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/welcome
+NEXT_PUBLIC_CLERK_SIGN_OUT_FORCE_REDIRECT_URL=/welcome
 
 //mongodb
 MONGODB_URI=**********
