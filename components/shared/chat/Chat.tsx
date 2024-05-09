@@ -33,6 +33,7 @@ const Chat = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const nextId = useRef(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  let textList: string[] = [];
 
   const onHistoryChange = useCallback((history: HistoryItem[]) => {
     setChatHistory(history);
@@ -75,7 +76,10 @@ const Chat = () => {
           }
           if (inworldPacket.isText()) {
             setLastMessages(inworldPacket.text.text);
-            handleTextToSpeech(inworldPacket.text.text);
+            textList.push(inworldPacket.text.text);
+          }
+          if (inworldPacket.isInteractionEnd()) {
+            handleTextToSpeechGroup();
           }
         },
       });
@@ -99,33 +103,40 @@ const Chat = () => {
     [onHistoryChange, savedDialog]
   );
 
-  // Function to handle the Text-to-Speech request and queue management
-  const handleTextToSpeech = async (text: string) => {
-    try {
-      const response = await fetch("/api/modal/tts", {
+  const handleTextToSpeechGroup = async () => {
+    const fetchPromises = textList.map((text, index) =>
+      fetch("/api/modal/tts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ text }),
-      });
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Error fetching TTS for text: ${text}`);
+          }
+          return response.blob();
+        })
+        .then((audioBlob) => {
+          const newAudioUrl = URL.createObjectURL(audioBlob);
+          return { id: index, url: newAudioUrl, text };
+        })
+        .catch((error) => {
+          console.error(`Failed to fetch TTS for text: ${text}`, error);
+          return { id: index, url: "", text }; // Ensure the item remains in the queue
+        })
+    );
+    // Execute all promises concurrently while maintaining their original order
+    const unorderedResults = await Promise.all(fetchPromises);
 
-      if (response.ok) {
-        const audioBlob = await response.blob();
-        const newAudioUrl = URL.createObjectURL(audioBlob);
-        const newQueueItem = { id: nextId.current++, url: newAudioUrl, text };
-        setQueue((prevQueue) => [...prevQueue, newQueueItem]);
-      } else {
-        console.error("Error:", await response.json());
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    } finally {
-    }
+    // Order results based on their original index
+    const orderedResults = unorderedResults.sort((a, b) => a.id - b.id);
+    textList = [];
+    setQueue(orderedResults);
   };
 
   const playNextInQueue = () => {
-
     if (queue.length > 0) {
       const [nextItem, ...remainingQueue] = queue;
       setQueue(remainingQueue);
@@ -135,6 +146,7 @@ const Chat = () => {
         setIsPlaying(false);
       };
       setIsPlaying(true);
+
       audioRef.current.play().catch((error) => {
         console.error("Playback error:", error);
         setIsPlaying(false);
