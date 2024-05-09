@@ -40,7 +40,7 @@ INWORLD_BASE64_KEY=*********
 
 ## Deployment
 
-https://meimei-iota.vercel.app/
+https://emi-theta.vercel.app/
 
 ## Project Structure
 
