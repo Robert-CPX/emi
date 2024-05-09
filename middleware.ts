@@ -15,5 +15,6 @@ export default authMiddleware({
   ],
   ignoredRoutes: [
     '/api/webhooks',
+    '/api/modal/tts',
   ],
 });
