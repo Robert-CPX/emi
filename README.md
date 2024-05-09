@@ -11,6 +11,7 @@
 
 ```
 NEXT_PUBLIC_SERVER_URL="http://localhost:3000"
+NEXT_PUBLIC_PHONE_TEST_URL="http://your-local-hostname:3000"
 
 // Clerk
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=**********
@@ -24,6 +25,12 @@ NEXT_PUBLIC_CLERK_SIGN_OUT_FORCE_REDIRECT_URL=/welcome
 
 //mongodb
 MONGODB_URI=**********
+
+// inworld
+INWORLD_API_KEY=**********
+INWORLD_SECRET_KEY=*********
+INWORLD_SCENE=*********
+INWORLD_BASE64_KEY=*********
 ```
 
 ## Branches
