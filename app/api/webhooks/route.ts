@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       "svix-signature": svix_signature,
     }) as WebhookEvent
   } catch (err) {
-    return new Response('Error occured', {
+    return new Response(`Error occured -- ${err}`, {
       status: 400
     })
   }
