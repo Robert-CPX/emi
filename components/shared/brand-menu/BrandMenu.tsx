@@ -4,11 +4,11 @@ import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu
 import { ClerkLoaded, ClerkLoading } from "@clerk/nextjs"
 import { Loader2, ChevronUp, ChevronDown } from "lucide-react"
 import SignedInBit from "./SignedInBit"
-import { useMeimei } from "@/context/MeimeiProvider"
+import { useEmi } from "@/context/EmiProvider"
 import { useState } from "react"
 
 const BrandMenu = () => {
-  const { mode } = useMeimei()
+  const { mode } = useEmi()
   const [isOpen, setIsOpen] = useState(false)
   return (
     <>

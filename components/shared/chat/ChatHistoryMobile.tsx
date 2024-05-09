@@ -2,14 +2,14 @@
 'use client'
 
 import React from "react";
-import { useMeimei } from "@/context/MeimeiProvider"
+import { useEmi } from "@/context/EmiProvider"
 import { useEffect, useState } from "react"
 import { ChatResponse } from "../../../constants"
 import { MockChatHistory } from "@/constants/constants"
 import Image from "next/image";
 
 const ChatHistoryMobile = () => {
-  const { mode } = useMeimei()
+  const { mode } = useEmi()
   const [chatHistory, setChatHistory] = useState<ChatResponse[]>([])
 
   useEffect(() => {
@@ -24,7 +24,7 @@ const ChatHistoryMobile = () => {
           <React.Fragment key={index}>
             {message.role !== 'user' && (
               <div className="flex items-start justify-start gap-1">
-                <Image src="assets/images/meimei_profile.svg" width={48} height={48} alt="avatar" className="my-2 size-[48px] rounded-full bg-[#D6DDFF]" />
+                <Image src="assets/images/emi_profile.svg" width={48} height={48} alt="avatar" className="my-2 size-[48px] rounded-full bg-[#D6DDFF]" />
                 <div
                   className="chat-bubble-container-mobile-history chat-bubble-mobile-history-ai"
                 >

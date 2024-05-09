@@ -152,7 +152,7 @@ h6 {
     text-wrap: balance;
   }
 
-  .meimei-main {
+  .emi-main {
     @apply fixed left-0 top-0 -z-50 size-full overflow-hidden;
   }
 

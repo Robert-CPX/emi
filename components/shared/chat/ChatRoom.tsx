@@ -8,10 +8,10 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import InputControl from "./InputControl";
 import ChatHistoryWidget from "./ChatHistoryWidget";
-import { useMeimei } from "@/context/MeimeiProvider";
+import { useEmi } from "@/context/EmiProvider";
 import SingleChatBox from "./SingleChatBox";
 import MiniChatBubble from "./MiniChatBubble";
-import { useMeimeiTime } from "@/context/MeimeiTimeProvider";
+import { useEmiTime } from "@/context/EmiTimeProvider";
 import { EmotionsMap } from "@/constants";
 
 interface ChatRoomProps {
@@ -26,9 +26,9 @@ const ChatRoom = (props: ChatRoomProps) => {
   const { characters, chatHistory, connection, lastMessages } = props;
   const [text, setText] = useState("");
   const [isInteractionEnd, setIsInteractionEnd] = useState<boolean>(false);
-  const { mode } = useMeimei()
+  const { mode } = useEmi()
   const [isSneaking, setIsSneaking] = useState(false) // a flag to show/hide ChatHistory on desktop
-  const { isRunning } = useMeimeiTime()
+  const { isRunning } = useEmiTime()
 
   const handleTextSend = useCallback((input: string) => {
     connection.sendText(input)

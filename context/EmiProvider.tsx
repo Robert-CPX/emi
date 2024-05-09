@@ -5,16 +5,16 @@ import React, { useState, createContext, useContext } from "react"
 
 export type ModeType = "companion" | "focus" | "dredge-up"
 
-type MeimeiContextType = {
+type EmiContextType = {
   mode: ModeType
   setMode: (newMode: ModeType) => void
   emotion: EmotionEvent | null
   setEmotion: (newEmotion: EmotionEvent) => void
 }
 
-const MeimeiContext = createContext<MeimeiContextType | undefined>(undefined)
+const EmiContext = createContext<EmiContextType | undefined>(undefined)
 
-export const MeimeiProvider = ({
+export const EmiProvider = ({
   children
 }: {
   children: React.ReactNode
@@ -23,18 +23,18 @@ export const MeimeiProvider = ({
   const [emotion, setEmotion] = useState<EmotionEvent | null>(null)
 
   return (
-    <MeimeiContext.Provider value={{ mode, setMode, emotion, setEmotion }}>
+    <EmiContext.Provider value={{ mode, setMode, emotion, setEmotion }}>
       {children}
-    </MeimeiContext.Provider>
+    </EmiContext.Provider>
   )
 }
 
-export function useMeimei() {
-  const context = useContext(MeimeiContext)
+export function useEmi() {
+  const context = useContext(EmiContext)
   if (context === undefined) {
-    throw new Error('useMeimei must be used within a MeimeiProvider')
+    throw new Error('useEmi must be used within a EmiProvider')
   }
   return context
 }
 
-export default MeimeiProvider
+export default EmiProvider

@@ -4,17 +4,17 @@ import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { isMinuteInRange, isSecondInRange, formatMinutesAndSeconds } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
-import { useMeimei } from "@/context/MeimeiProvider"
-import { useMeimeiTime } from "@/context/MeimeiTimeProvider"
+import { useEmi } from "@/context/EmiProvider"
+import { useEmiTime } from "@/context/EmiTimeProvider"
 
 // TimeEditor component only show on desktop
 const TimeEditor = () => {
   const [minutes, setMinutes] = useState("00")
   const [seconds, setSeconds] = useState("00")
   const minuteRef = useRef<HTMLInputElement>(null)
-  const { mode } = useMeimei()
+  const { mode } = useEmi()
   // store the remaining time on context
-  const { time: countdown, setTime: setCountdown, isRunning } = useMeimeiTime()
+  const { time: countdown, setTime: setCountdown, isRunning } = useEmiTime()
 
   const handleMinutesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

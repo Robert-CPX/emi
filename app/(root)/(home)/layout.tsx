@@ -1,4 +1,4 @@
-import MeimeiTimeProvider from "@/context/MeimeiTimeProvider";
+import EmiTimeProvider from "@/context/EmiTimeProvider";
 
 const HomeLayout = ({
   children,
@@ -7,7 +7,7 @@ const HomeLayout = ({
 }>) => {
   return (
     <>
-      <MeimeiTimeProvider>{children}</MeimeiTimeProvider>
+      <EmiTimeProvider>{children}</EmiTimeProvider>
     </>
   );
 }

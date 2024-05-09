@@ -13,7 +13,7 @@ import { Config } from '@/config';
 import ChatRoom from './ChatRoom';
 import { EmotionsMap } from '@/constants';
 import { JSONToPreviousDialog } from '@/lib/utils';
-import { useMeimei } from '@/context/MeimeiProvider';
+import { useEmi } from '@/context/EmiProvider';
 
 const Chat = () => {
   const [connection, setConnection] = useState<InworldConnectionService>();
@@ -23,7 +23,7 @@ const Chat = () => {
   const [savedDialog, setSavedDialog] = useState<string>("");
   const [emotionEvent, setEmotionEvent] = useState<EmotionEvent>();
   const [emotions, setEmotions] = useState<EmotionsMap>({});
-  const { setEmotion: setMeimeiEmotion } = useMeimei();
+  const { setEmotion: setEmiEmotion } = useEmi();
 
   const onHistoryChange = useCallback((history: HistoryItem[]) => {
     setChatHistory(history);
@@ -92,8 +92,8 @@ const Chat = () => {
 
   useEffect(() => {
     if (!emotionEvent) return;
-    setMeimeiEmotion(emotionEvent);
-  }, [emotionEvent, setMeimeiEmotion]);
+    setEmiEmotion(emotionEvent);
+  }, [emotionEvent, setEmiEmotion]);
 
   useEffect(() => {
     openConnection();

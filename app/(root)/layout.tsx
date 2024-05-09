@@ -1,4 +1,4 @@
-import MeimeiProvider from "@/context/MeimeiProvider";
+import EmiProvider from "@/context/EmiProvider";
 import { Toaster } from "@/components/ui/toaster"
 const RootLayout = ({
   children,
@@ -7,7 +7,7 @@ const RootLayout = ({
 }>) => {
   return (
     <main className="relative h-full">
-      <MeimeiProvider>{children}</MeimeiProvider>
+      <EmiProvider>{children}</EmiProvider>
       <Toaster />
     </main>
   );

@@ -27,7 +27,7 @@ const Page = () => {
 
   return (
     <div className="relative flex size-full">
-      <div className="meimei-main">
+      <div className="emi-main">
         <video
           autoPlay muted playsInline loop
           className="size-full object-cover"

@@ -1,11 +1,11 @@
 'use client'
 
-import { useMeimei } from "@/context/MeimeiProvider"
+import { useEmi } from "@/context/EmiProvider"
 import Link from "next/link"
 import Image from "next/image"
 
 const ActionMenu = () => {
-  const { mode } = useMeimei()
+  const { mode } = useEmi()
 
   return (
     <div className={`${(mode === 'focus' || mode === 'dredge-up') ? 'hidden' : 'flex'} flex-col gap-4`}>

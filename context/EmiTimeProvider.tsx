@@ -2,27 +2,27 @@
 
 import { COUNTDOWN_ID, COUNTDOWN_REMAINING_SECONDS } from "@/constants/constants"
 import React, { createContext, useContext, useEffect, useState } from "react"
-import { useMeimei } from "./MeimeiProvider"
+import { useEmi } from "./EmiProvider"
 import { setANewTimer } from "@/lib/actions/interaction.actions"
 import { useAuth } from "@clerk/nextjs"
 
-type MeimeiTimeContextType = {
+type EmiTimeContextType = {
   time: number // in seconds
   setTime: (newTime: number) => void
   isRunning: boolean // countdown is running or not
   setIsRunning: (newIsRunning: boolean) => void
 }
 
-const MeimeiTimeContext = createContext<MeimeiTimeContextType | undefined>(undefined)
+const EmiTimeContext = createContext<EmiTimeContextType | undefined>(undefined)
 
-const MeimeiTimeProvider = ({
+const EmiTimeProvider = ({
   children
 }: {
   children: React.ReactNode
 }) => {
   const [time, setTime] = useState(0)
   const [isRunning, setIsRunning] = useState(false)
-  const { setMode } = useMeimei()
+  const { setMode } = useEmi()
   const { userId } = useAuth()
 
   useEffect(() => {
@@ -84,20 +84,20 @@ const MeimeiTimeProvider = ({
     }
   }
   return (
-    <MeimeiTimeContext.Provider
+    <EmiTimeContext.Provider
       value={{ time, setTime, isRunning, setIsRunning }}
     >
       {children}
-    </MeimeiTimeContext.Provider>
+    </EmiTimeContext.Provider>
   )
 }
 
-export function useMeimeiTime() {
-  const context = useContext(MeimeiTimeContext)
+export function useEmiTime() {
+  const context = useContext(EmiTimeContext)
   if (context === undefined) {
-    throw new Error('useMeimeiTime must be used within a MeimeiTimeProvider')
+    throw new Error('useEmiTime must be used within a EmiTimeProvider')
   }
   return context
 }
 
-export default MeimeiTimeProvider
+export default EmiTimeProvider

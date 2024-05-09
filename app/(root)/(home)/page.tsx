@@ -1,4 +1,4 @@
-import Meimei from "@/components/shared/Meimei"
+import Emi from "@/components/shared/Emi"
 import ModeTabs from "@/components/shared/ModeTabs"
 import BrandMenu from "@/components/shared/brand-menu"
 import { Chat, ChatMobileBackground, ChatHistoryMobile } from "@/components/shared/chat"
@@ -12,9 +12,9 @@ const Home = () => {
   if (!userId) redirect('/sign-in')
   return (
     <>
-      {/* Meimei as background */}
-      <div className="meimei-main">
-        <Meimei />
+      {/* Emi as background */}
+      <div className="emi-main">
+        <Emi />
       </div>
       <div className="isolate flex h-full justify-between p-4 max-md:flex-col md:px-8">
         {/* Brand menu only show on desktop */}

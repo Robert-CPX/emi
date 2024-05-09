@@ -7,14 +7,14 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import { useMeimei, ModeType } from "@/context/MeimeiProvider"
-import { useMeimeiTime } from "@/context/MeimeiTimeProvider"
+import { useEmi, ModeType } from "@/context/EmiProvider"
+import { useEmiTime } from "@/context/EmiTimeProvider"
 import { TabDataType } from "@/constants"
 
 const ModeTabs = () => {
   const [modeData, setModeData] = useState<TabDataType | null>(null);
-  const { mode: currentMode, setMode } = useMeimei();
-  const { isRunning } = useMeimeiTime();
+  const { mode: currentMode, setMode } = useEmi();
+  const { isRunning } = useEmiTime();
 
   const handleResize = () => {
     if (window.innerWidth > 768) {

@@ -6,17 +6,17 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
 import { createVRMAnimationClip, VRMAnimationLoaderPlugin, VRMLookAtQuaternionProxy } from '@pixiv/three-vrm-animation';
-import { useMeimei } from '@/context/MeimeiProvider';
+import { useEmi } from '@/context/EmiProvider';
 import { getAnimation } from '@/lib/utils';
-import { EMI_RESOURCES, MEIMEI_ANIMATIONS } from '@/constants/constants';
+import { EMI_RESOURCES, EMI_ANIMATIONS } from '@/constants/constants';
 
-const Meimei = () => {
+const Emi = () => {
   const mountRef = useRef<HTMLDivElement>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
   const vrmRef = useRef<any>(null); // Use a more specific type for your VRM model
   const gltfLoaderRef = useRef<GLTFLoader>(new GLTFLoader());  // Ref for GLTFLoader
   const mainAnimationRef = useRef<THREE.AnimationAction | null>(null);
-  const { emotion } = useMeimei();
+  const { emotion } = useEmi();
 
   useEffect(() => {
     if (!emotion) return;
@@ -74,7 +74,7 @@ const Meimei = () => {
       const clock = new THREE.Clock();
 
       // Load and play the intro animation immediately after the VRM is loaded
-      const gltfVrma = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.emotionPath + MEIMEI_ANIMATIONS.DEFAULT);
+      const gltfVrma = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.emotionPath + EMI_ANIMATIONS.DEFAULT);
       const vrmAnimation = gltfVrma.userData.vrmAnimations[0];
       const introClip = createVRMAnimationClip(vrmAnimation, vrm);
       mainAnimationRef.current = mixerRef.current.clipAction(introClip);
@@ -158,4 +158,4 @@ const Meimei = () => {
   return <div ref={mountRef} />;
 };
 
-export default Meimei;
+export default Emi;

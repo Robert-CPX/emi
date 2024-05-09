@@ -5,7 +5,7 @@ import { connectToDatabase } from '@/database/mongoose';
 import { handleError } from '../utils';
 import { HaveConversationParams, SetTimerParams, SetModeParams } from './shared';
 
-// User have a conversation with Meimei
+// User have a conversation with Emi
 export const haveConversation = async (params: HaveConversationParams) => {
   try {
     await connectToDatabase();

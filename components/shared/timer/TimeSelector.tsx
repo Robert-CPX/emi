@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/button"
 import { Check, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useMeimei } from "@/context/MeimeiProvider"
-import { useMeimeiTime } from "@/context/MeimeiTimeProvider"
+import { useEmi } from "@/context/EmiProvider"
+import { useEmiTime } from "@/context/EmiTimeProvider"
 import { generateTimeOptions } from '@/lib/utils'
 
 // TimeSelector component only show on mobile
@@ -14,12 +14,12 @@ const TimeSelector = () => {
   // display the remaining time
   const [remainMinutes, setRemainMinutes] = useState("--")
   const [remainSeconds, setRemainSeconds] = useState("--")
-  const { mode } = useMeimei()
+  const { mode } = useEmi()
 
   const timeOptions = generateTimeOptions()
 
   // store the remaining time on context
-  const { time: countdown, setTime: setCountdown } = useMeimeiTime()
+  const { time: countdown, setTime: setCountdown } = useEmiTime()
   const handleConfirm = () => {
     setCountdown(time);
   }

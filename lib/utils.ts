@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { EMOJIS, MEIMEI_ANIMATIONS } from "@/constants/constants"
+import { EMOJIS, EMI_ANIMATIONS } from "@/constants/constants"
 import { MockEmotionList } from "@/constants/constants"
 import { DialogPhrase, EmotionBehavior, EmotionEvent } from "@inworld/web-core"
 
@@ -63,14 +63,14 @@ export const generateTimeOptions = (): number[] => {
 };
 
 export function getRandomAnimation(): string {
-  const keys = Object.keys(MEIMEI_ANIMATIONS);
+  const keys = Object.keys(EMI_ANIMATIONS);
   const randomKey = keys[Math.floor(Math.random() * keys.length)];
-  return MEIMEI_ANIMATIONS[randomKey as keyof typeof MEIMEI_ANIMATIONS];
+  return EMI_ANIMATIONS[randomKey as keyof typeof EMI_ANIMATIONS];
 }
 
 export function getAnimation(emotion: EmotionEvent): string {
   const code = emotion.behavior.code;
-  return MEIMEI_ANIMATIONS[code];
+  return EMI_ANIMATIONS[code];
 }
 
 export function getRandomEmotion(): any {
