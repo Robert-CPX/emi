@@ -92,14 +92,7 @@ const Emi = () => {
       mixerRef.current = new THREE.AnimationMixer(vrm.scene);
       clockRef.current = new THREE.Clock();
 
-      // // Load and play the intro animation immediately after the VRM is loaded
-      // const gltfVrma = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.emotionPath + EMI_ANIMATIONS.DEFAULT.idle);
-      // const vrmAnimation = gltfVrma.userData.vrmAnimations[0];
-      // const introClip = createVRMAnimationClip(vrmAnimation, vrm);
-      // mainAnimationRef.current = mixerRef.current.clipAction(introClip);
-      // mainAnimationRef.current.play();
-      const animation = EMI_ANIMATIONS.DEFAULT
-      loadAndPlayAnimation(animation.idle);
+      loadAndPlayAnimation(EMI_ANIMATIONS.DEFAULT.idle);
 
       // //load pencil
       // const gltfPencil = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.pencil);
@@ -126,12 +119,10 @@ const Emi = () => {
       scene.add(gltfTableTopItems.scene);
 
       const animate = () => {
-        // requestAnimationFrame(animate);
         const deltaTime = clockRef.current?.getDelta();
         if(deltaTime){
           mixerRef.current?.update(deltaTime);
           vrm.update(deltaTime);
-
         }
         renderer.render( scene, camera );
       };
@@ -178,16 +169,12 @@ const Emi = () => {
         newAction.weight = 1;
         // Start playing the new action first
         newAction.play();
-      
         // Use crossFadeTo to transition from the current action to the new action
         mainAnimationRef.current.crossFadeTo(newAction, fadeDuration, true);
-        
-        // Immediately update the main animation reference to the new action
-        mainAnimationRef.current = newAction;
       } else {
         newAction.play();
-        mainAnimationRef.current = newAction;
       }
+      mainAnimationRef.current = newAction;
 
     } catch (error) {
       console.error('Failed to load or play the animation:', error);
