@@ -22,27 +22,27 @@ export const EMI_RESOURCES = {
   emotionPath: 'emi/emotions/',
 }
 
-export const EMI_ANIMATIONS: { [key: string]: string } = {
-  DEFAULT: "idle.vrma",
-  INTRO: "Intro.vrma",
-  AFFECTION: "chestpat.vrma",
-  ANGER: "angry.vrma",
-  BELLIGERENCE: "boxing.vrma",
-  CONTEMPT: "loser.vrma",
-  CRITICISM: "angrypoint.vrma",
-  DEFENSIVENESS: "bashful.vrma",
-  DISGUST: "standing_arguing.vrma",
-  DOMINEERING: "talk.vrma",
-  HUMOR: "talk.vrma",
-  INTEREST: "talk.vrma",
-  JOY: "happy.vrma",
-  SADNESS: "sad.vrma",
-  STONEWALLING: "angry.vrma",
-  SURPRISE: "surprised.vrma",
-  TENSE: "nervously_look_around.vrma",
-  TENSION: "nervously_look_around.vrma",
-  VALIDATION: "head_nod_yes.vrma",
-  WHINING: "talking_whining.vrma"
+export const EMI_ANIMATIONS: { [key: string]: { idle: string, gestures: string[] } } = {
+  DEFAULT: { idle: "idle.vrma", gestures: [] },
+  INTRO: { idle: "Intro.vrma", gestures: [] },
+  AFFECTION: { idle: "idle.vrma", gestures: ["talk1.vrma", "talk2.vrma"] },
+  ANGER: { idle: "angry.vrma", gestures: ["angrypoint.vrma", "standing_arguing.vrma"] },
+  BELLIGERENCE: { idle: "boxing.vrma", gestures: ["talk1.vrma"] },
+  CONTEMPT: { idle: "idle_angry.vrma", gestures: ["angrypoint.vrma", "standing_arguing.vrma"] },
+  CRITICISM: { idle: "idle_angry.vrma", gestures: ["angrypoint.vrma", "standing_arguing.vrma"] },
+  DEFENSIVENESS: { idle: "idle_angry.vrma", gestures: [] },
+  DISGUST: { idle: "idle_angry.vrma", gestures: ["angrypoint.vrma", "standing_arguing.vrma"] },
+  DOMINEERING: { idle: "idle_relaxed.vrma", gestures: ["talk1.vrma"] },
+  HUMOR: { idle: "idle_relaxed.vrma", gestures: ["talk1.vrma", "talk2.vrma", "thinking.vrma", "head_nod_yes.vrma", "chestpat.vrma"] },
+  INTEREST: { idle: "idle.vrma", gestures: ["talk1.vrma", "talk2.vrma", "thinking.vrma", "head_nod_yes.vrma", "chestpat.vrma"] },
+  JOY: { idle: "idle.vrma", gestures: ["talk1.vrma", "head_nod_yes.vrma", "wave.vrma"] },
+  SADNESS: { idle: "idle_sad.vrma", gestures: [] },
+  STONEWALLING: { idle: "idle.vrma", gestures: [] },
+  SURPRISE: { idle: "idle_surprised.vrma", gestures: ["surprised.vrma"] },
+  TENSE: { idle: "idle_surprised.vrma", gestures: ["surprised.vrma"] },
+  TENSION: { idle: "idle_surprised.vrma", gestures: ["surprised.vrma"] },
+  VALIDATION: { idle: "idle.vrma", gestures: ["head_nod_yes.vrma"] },
+  WHINING: { idle: "idle_sad.vrma", gestures: ["talk1.vrma"] },
 }
 
 export const EMOJIS: { [key: string]: string[] } = {

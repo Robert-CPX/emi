@@ -16,12 +16,31 @@ const Emi = () => {
   const vrmRef = useRef<any>(null); // Use a more specific type for your VRM model
   const gltfLoaderRef = useRef<GLTFLoader>(new GLTFLoader());  // Ref for GLTFLoader
   const mainAnimationRef = useRef<THREE.AnimationAction | null>(null);
+  const clockRef = useRef<THREE.Clock | null>(null);
   const { emotion } = useEmi();
 
   useEffect(() => {
     if (!emotion) return;
     const animation = getAnimation(emotion);
-    loadAndPlayAnimation(animation);
+    console.log("Current Emotion: " + emotion.behavior.code)
+
+    if (!mixerRef.current) {
+      throw new Error('mixerRef.current is not found.');
+    }
+    
+    // play random gesture if there is one
+    if(animation.gestures.length > 0){ 
+      const randIdx = Math.floor(Math.random() * animation.gestures.length);
+      loadAndPlayAnimation(animation.gestures[randIdx], false);
+      const onFinished = () => {
+        if (!mixerRef.current) return; // Check for null
+        mixerRef.current.removeEventListener('finished', onFinished); // Clean up the listener
+        loadAndPlayAnimation(animation.idle); // Play idle animation in loop
+      };
+      mixerRef.current.addEventListener('finished', onFinished);
+    } else {
+      loadAndPlayAnimation(animation.idle);
+    } 
   }, [emotion]);
 
   useEffect(() => {
@@ -71,26 +90,28 @@ const Emi = () => {
       scene.add(vrm.scene);
 
       mixerRef.current = new THREE.AnimationMixer(vrm.scene);
-      const clock = new THREE.Clock();
+      clockRef.current = new THREE.Clock();
 
-      // Load and play the intro animation immediately after the VRM is loaded
-      const gltfVrma = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.emotionPath + EMI_ANIMATIONS.DEFAULT);
-      const vrmAnimation = gltfVrma.userData.vrmAnimations[0];
-      const introClip = createVRMAnimationClip(vrmAnimation, vrm);
-      mainAnimationRef.current = mixerRef.current.clipAction(introClip);
-      mainAnimationRef.current.play();
+      // // Load and play the intro animation immediately after the VRM is loaded
+      // const gltfVrma = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.emotionPath + EMI_ANIMATIONS.DEFAULT.idle);
+      // const vrmAnimation = gltfVrma.userData.vrmAnimations[0];
+      // const introClip = createVRMAnimationClip(vrmAnimation, vrm);
+      // mainAnimationRef.current = mixerRef.current.clipAction(introClip);
+      // mainAnimationRef.current.play();
+      const animation = EMI_ANIMATIONS.DEFAULT
+      loadAndPlayAnimation(animation.idle);
 
-      //load pencil
-      const gltfPencil = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.pencil);
-      const pencil = gltfPencil.scene;
-      scene.add(pencil);
-      const boneToAttachTo = vrm.humanoid.getBoneNode('rightThumbDistal');
-      boneToAttachTo.add(pencil);
-      const relativeOffsetPosition = new THREE.Vector3(0, -0.02, 0.01);
-      const relativeOffsetRotation = new THREE.Euler(Math.PI / 4, 0, 0, 'XYZ');
-      pencil.rotation.setFromVector3(relativeOffsetRotation as any);
-      pencil.position.copy(relativeOffsetPosition);
-      boneToAttachTo.updateMatrixWorld(true);
+      // //load pencil
+      // const gltfPencil = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.pencil);
+      // const pencil = gltfPencil.scene;
+      // scene.add(pencil);
+      // const boneToAttachTo = vrm.humanoid.getBoneNode('rightThumbDistal');
+      // boneToAttachTo.add(pencil);
+      // const relativeOffsetPosition = new THREE.Vector3(0, -0.02, 0.01);
+      // const relativeOffsetRotation = new THREE.Euler(Math.PI / 4, 0, 0, 'XYZ');
+      // pencil.rotation.setFromVector3(relativeOffsetRotation as any);
+      // pencil.position.copy(relativeOffsetPosition);
+      // boneToAttachTo.updateMatrixWorld(true);
 
       // load chair
       const gltfChair = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.chair);
@@ -105,15 +126,16 @@ const Emi = () => {
       scene.add(gltfTableTopItems.scene);
 
       const animate = () => {
-        requestAnimationFrame(animate);
-        const deltaTime = clock.getDelta();
-        mixerRef.current?.update(deltaTime);
-        vrm.update(deltaTime);
-        renderer.setAnimationLoop(() => {
-          renderer.render(scene, camera);
-        });
+        // requestAnimationFrame(animate);
+        const deltaTime = clockRef.current?.getDelta();
+        if(deltaTime){
+          mixerRef.current?.update(deltaTime);
+          vrm.update(deltaTime);
+
+        }
+        renderer.render( scene, camera );
       };
-      animate();
+      renderer.setAnimationLoop(animate);
     };
 
     initVRMScene();
@@ -133,23 +155,40 @@ const Emi = () => {
     };
   }, []);
 
-  const loadAndPlayAnimation = async (filename: string) => {
+  const loadAndPlayAnimation = async (filename: string, shouldLoop=true) => {
     const fullPath = EMI_RESOURCES.emotionPath + filename;
-
+    const fadeDuration = 1; // Transition duration in seconds
+    console.log("playing animation " + fullPath);
     try {
+      if (!mixerRef.current) {
+        throw new Error('mixerRef.current is not found.');
+      }
+
       const gltfVrma = await gltfLoaderRef.current.loadAsync(fullPath);
       const vrmAnimation = gltfVrma.userData.vrmAnimations[0];
       const clip = createVRMAnimationClip(vrmAnimation, vrmRef.current);
 
+      // Create a new action for the new animation clip
+      const newAction = mixerRef.current?.clipAction(clip);
+      newAction.clampWhenFinished = true;
+      newAction.loop = shouldLoop ? THREE.LoopRepeat : THREE.LoopOnce;
+      
+      // If there's a currently active action, fade it out
       if (mainAnimationRef.current) {
-        mainAnimationRef.current.stop();
+        newAction.weight = 1;
+        // Start playing the new action first
+        newAction.play();
+      
+        // Use crossFadeTo to transition from the current action to the new action
+        mainAnimationRef.current.crossFadeTo(newAction, fadeDuration, true);
+        
+        // Immediately update the main animation reference to the new action
+        mainAnimationRef.current = newAction;
+      } else {
+        newAction.play();
+        mainAnimationRef.current = newAction;
       }
 
-      if (!mixerRef.current) {
-        throw new Error('mixerRef.current is not found.');
-      }
-      mainAnimationRef.current = mixerRef.current?.clipAction(clip);
-      mainAnimationRef.current.play();
     } catch (error) {
       console.error('Failed to load or play the animation:', error);
     }
