@@ -9,6 +9,7 @@ import { createVRMAnimationClip, VRMAnimationLoaderPlugin, VRMLookAtQuaternionPr
 import { useEmi } from '@/context/EmiProvider';
 import { getAnimation } from '@/lib/utils';
 import { EMI_RESOURCES, EMI_ANIMATIONS } from '@/constants/constants';
+import { log } from 'console';
 
 const Emi = () => {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -17,7 +18,9 @@ const Emi = () => {
   const gltfLoaderRef = useRef<GLTFLoader>(new GLTFLoader());  // Ref for GLTFLoader
   const mainAnimationRef = useRef<THREE.AnimationAction | null>(null);
   const clockRef = useRef<THREE.Clock | null>(null);
-  const { emotion } = useEmi();
+  const { emotion, isSpeaking } = useEmi();
+
+  const speakAnimationRef = useRef<THREE.AnimationAction | null>(null);
 
   useEffect(() => {
     if (!emotion) return;
@@ -42,6 +45,14 @@ const Emi = () => {
       loadAndPlayAnimation(animation.idle);
     } 
   }, [emotion]);
+
+  useEffect(() => {
+    if (isSpeaking) {
+      speakAnimationRef.current?.play();
+    } else {
+      speakAnimationRef.current?.stop();
+    }
+  }, [isSpeaking]);
 
   useEffect(() => {
     const scene = new THREE.Scene();
@@ -93,6 +104,16 @@ const Emi = () => {
       clockRef.current = new THREE.Clock();
 
       loadAndPlayAnimation(EMI_ANIMATIONS.DEFAULT.idle);
+
+      //setup speak animation
+      const speak_interval = 0 
+      const speakTrack = new THREE.NumberKeyframeTrack(
+        vrmRef.current.expressionManager.getExpressionTrackName( 'aa' ), // name
+        [ 0.0, 0.2, 0.4,  speak_interval], // times
+        [ 0.0, 0.3, 0.0, 0.0 ] // values
+      );
+      const clip = new THREE.AnimationClip( 'Animation', 0.4 + speak_interval, [ speakTrack ] );
+      speakAnimationRef.current = mixerRef.current?.clipAction( clip )
 
       // //load pencil
       // const gltfPencil = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.pencil);

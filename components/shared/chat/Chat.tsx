@@ -28,7 +28,7 @@ const Chat = () => {
   const [savedDialog, setSavedDialog] = useState<string>("");
   const [emotionEvent, setEmotionEvent] = useState<EmotionEvent>();
   const [emotions, setEmotions] = useState<EmotionsMap>({});
-  const { setEmotion: setEmiEmotion } = useEmi();
+  const { setEmotion: setEmiEmotion, setIsSpeaking: setEmiIsSpeaking} = useEmi();
   const [queue, setQueue] = useState<AudioQueueItem[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -167,6 +167,10 @@ const Chat = () => {
     if (!emotionEvent) return;
     setEmiEmotion(emotionEvent);
   }, [emotionEvent, setEmiEmotion]);
+
+  useEffect(() => {
+    setEmiIsSpeaking(isPlaying);
+  }, [isPlaying, setEmiIsSpeaking]);
 
   useEffect(() => {
     openConnection();

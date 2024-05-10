@@ -10,6 +10,8 @@ type EmiContextType = {
   setMode: (newMode: ModeType) => void
   emotion: EmotionEvent | null
   setEmotion: (newEmotion: EmotionEvent) => void
+  isSpeaking: boolean
+  setIsSpeaking: (isSpeaking: boolean) => void
 }
 
 const EmiContext = createContext<EmiContextType | undefined>(undefined)
@@ -21,9 +23,10 @@ export const EmiProvider = ({
 }) => {
   const [mode, setMode] = useState<ModeType>("companion")
   const [emotion, setEmotion] = useState<EmotionEvent | null>(null)
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false)
 
   return (
-    <EmiContext.Provider value={{ mode, setMode, emotion, setEmotion }}>
+    <EmiContext.Provider value={{ mode, setMode, emotion, setEmotion, isSpeaking, setIsSpeaking }}>
       {children}
     </EmiContext.Provider>
   )
