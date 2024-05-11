@@ -49,12 +49,12 @@ export const deleteUser = async (params: DeleteUserParams) => {
   }
 };
 
-// Get user mongo Id by clerk Id
-export const getMongoIdByClerkId = async (params: GetUserByIdParams) => {
+// Get mongo user info by clerk Id
+export const getMongoUserByClerkId = async (params: GetUserByIdParams) => {
   try {
     await connectToDatabase()
     const user = await UserDocument.findOne({ clerkId: params.userId })
-    return user.id
+    return user
   } catch (error) {
     handleError(error);
   }

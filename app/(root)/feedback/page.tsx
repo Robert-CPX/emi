@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form"
 import MobileNavigationBar from "@/components/shared/MobileNavigationBar"
 import { createFeedback } from "@/lib/actions/feedback.actions"
-import { getMongoIdByClerkId } from "@/lib/actions/user.actions"
+import { getMongoUserByClerkId } from "@/lib/actions/user.actions"
 import { useAuth } from '@clerk/nextjs'
 import { redirect } from 'next/navigation'
 import { toast } from '@/components/ui/use-toast';
@@ -37,8 +37,8 @@ const Page = () => {
 
   const onSubmit = async (values: z.infer<typeof FeedbackSchema>) => {
     try {
-      const mongoId = await getMongoIdByClerkId({ userId })
-      await createFeedback({ detail: values.feedback, author: mongoId })
+      const user = await getMongoUserByClerkId({ userId })
+      await createFeedback({ detail: values.feedback, author: user.id })
       form.reset()
       toast({ description: 'Answer posted successfully' })
     } catch (error) {
