@@ -33,11 +33,11 @@ const ModeTabs = () => {
   }, []);
 
   return (
-    <div className={`relative isolate flex h-[44px] items-center justify-center md:w-[248px] ${isRunning && 'hidden'}`}>
-      <div className='absolute inset-0 -z-10 rounded-[22px] bg-dark/50'></div>
-      <Tabs defaultValue="companion" className='px-2 text-light'>
+    <div className={`relative isolate flex h-[44px] w-[248px] items-center justify-between max-md:w-full ${isRunning && 'hidden'}`}>
+      <div className='absolute inset-0 -z-10 rounded-[22px] bg-dark/50' />
+      <Tabs defaultValue="companion" className='w-full text-light'>
         <TabsList
-          className="flex items-center justify-center gap-4"
+          className="flex items-center justify-evenly"
           defaultValue={currentMode}>
           {modeData?.map((mode) => (
             <TabsTrigger

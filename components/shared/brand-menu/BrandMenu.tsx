@@ -13,7 +13,7 @@ const BrandMenu = () => {
   return (
     <>
       {mode === 'companion' ? (
-        <div className="self-start rounded-[20px] border border-dark bg-light px-2 shadow-md max-md:hidden">
+        <div className="self-start rounded-[20px] border border-dark bg-light shadow-md max-md:hidden">
           <ClerkLoading>
             <Loader2 size={48} className="size-12 animate-spin text-dark" />
           </ClerkLoading>
