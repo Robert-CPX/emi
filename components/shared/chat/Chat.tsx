@@ -31,7 +31,6 @@ const Chat = () => {
   const { setEmotion: setEmiEmotion } = useEmi();
   const [queue, setQueue] = useState<AudioQueueItem[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const nextId = useRef(0);
   const [isPlaying, setIsPlaying] = useState(false);
   let textList: string[] = [];
 

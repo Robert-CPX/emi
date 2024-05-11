@@ -18,6 +18,6 @@ const InteractionSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
 })
 
-const InteractionDocument = models.Interaction || model('Interaction', InteractionSchema)
+const InteractionModel = models.Interaction || model('Interaction', InteractionSchema)
 
-export default InteractionDocument
+export default InteractionModel

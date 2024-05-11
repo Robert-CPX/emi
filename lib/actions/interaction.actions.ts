@@ -1,6 +1,6 @@
 'use server'
 
-import InteractionDocument from '@/database/models/interaction.model';
+import InteractionModel from '@/database/models/interaction.model';
 import { connectToDatabase } from '@/database/mongoose';
 import { handleError } from '../utils';
 import { HaveConversationParams, SetTimerParams, SetModeParams } from './shared';
@@ -11,7 +11,7 @@ export const haveConversation = async (params: HaveConversationParams) => {
     await connectToDatabase();
     const { content, userId } = params
     if (userId) {
-      await InteractionDocument.create({
+      await InteractionModel.create({
         clerkUserId: userId,
         question: content,
         action: 'conversation'
@@ -28,7 +28,7 @@ export const setANewTimer = async (params: SetTimerParams) => {
     await connectToDatabase();
     const { time, userId } = params
     if (userId) {
-      await InteractionDocument.create({
+      await InteractionModel.create({
         clerkUserId: userId,
         time: time,
         action: 'set_time'
@@ -45,7 +45,7 @@ export const toggleMode = async (params: SetModeParams) => {
     await connectToDatabase();
     const { mode, userId } = params
     if (userId) {
-      await InteractionDocument.create({
+      await InteractionModel.create({
         clerkUserId: userId,
         mode: mode,
         action: 'set_mode'
