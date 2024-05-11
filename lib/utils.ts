@@ -62,13 +62,13 @@ export const generateTimeOptions = (): number[] => {
   return list;
 };
 
-export function getRandomAnimation(): string {
+export function getRandomAnimation(): { idle: string; gestures: string[]; } {
   const keys = Object.keys(EMI_ANIMATIONS);
   const randomKey = keys[Math.floor(Math.random() * keys.length)];
   return EMI_ANIMATIONS[randomKey as keyof typeof EMI_ANIMATIONS];
 }
 
-export function getAnimation(emotion: EmotionEvent): string {
+export function getAnimation(emotion: EmotionEvent): { idle: string; gestures: string[]; } {
   const code = emotion.behavior.code;
   return EMI_ANIMATIONS[code];
 }
