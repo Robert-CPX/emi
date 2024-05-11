@@ -9,7 +9,6 @@ import { createVRMAnimationClip, VRMAnimationLoaderPlugin, VRMLookAtQuaternionPr
 import { useEmi } from '@/context/EmiProvider';
 import { getAnimation } from '@/lib/utils';
 import { EMI_RESOURCES, EMI_ANIMATIONS } from '@/constants/constants';
-import { log } from 'console';
 
 const Emi = () => {
   const mountRef = useRef<HTMLDivElement>(null);
