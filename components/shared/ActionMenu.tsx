@@ -10,7 +10,7 @@ const ActionMenu = () => {
   return (
     <div className={`${(mode === 'focus' || mode === 'dredge-up') ? 'hidden' : 'flex'} flex-col gap-4`}>
       <Link href="/setting" className="flex items-center justify-center bg-transparent">
-        <Image src="/assets/icons/setting.svg" alt="settings" width={48} height={48} />
+        <Image src="/assets/icons/setting.svg" alt="settings" priority={false} width={48} height={48} />
       </Link>
     </div>
   )
