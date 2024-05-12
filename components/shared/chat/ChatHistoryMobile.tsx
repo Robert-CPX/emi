@@ -13,6 +13,7 @@ import Message from "@/database/models/message.model";
 const ChatHistoryMobile = () => {
   const { mode } = useEmi()
   const [chatHistory, setChatHistory] = useState<Message[]>([])
+  const [conversationId, setConversationId] = useState("")
   const { userId } = useAuth()
 
   useEffect(() => {
@@ -20,12 +21,20 @@ const ChatHistoryMobile = () => {
     const initConversation = async () => {
       const conversation = await getOrCreateConversation({ userId })
       if (!conversation) return
-      const messages = await fetchMessages({ conversationId: conversation.id })
-      if (!messages) return
-      setChatHistory(messages)
+      setConversationId(conversation.id)
     }
     initConversation()
   }, [userId]);
+
+  useEffect(() => {
+    if (mode !== 'dredge-up') return
+    const updateMessages = async () => {
+      const messages = await fetchMessages({ conversationId })
+      if (!messages) return
+      setChatHistory(messages)
+    }
+    updateMessages()
+  }, [mode, conversationId])
 
   return (
     <section className={`absolute inset-0 flex size-full flex-col bg-light/80 backdrop-blur-md md:hidden ${mode === 'dredge-up' ? "flex" : "hidden"}`}>
