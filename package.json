@@ -27,6 +27,7 @@
     "aws-amplify": "^6.0.30",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "firebase": "^10.11.1",
     "lucide-react": "^0.368.0",
     "mongodb": "^6.5.0",
     "mongoose": "^8.3.0",

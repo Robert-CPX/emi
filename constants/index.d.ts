@@ -8,12 +8,6 @@ export type EmiEmotion = {
   strength: string;
 }
 
-export type ChatResponse = {
-  role: string;
-  content: string;
-  emotion?: EmiEmotion;
-}
-
 export type TabDataType = {
   name: string;
   value: string;

@@ -42,3 +42,22 @@ export type SetModeParams = {
   userId: string;
   mode: string;
 }
+
+export type CreateConversationParams = {
+  userId: string;
+}
+
+export type SendMessageParams = {
+  conversationId: string;
+  sender: string;
+  contentType: string;
+  content: string;
+  emotion?: {
+    behavior: string;
+    strong: string;
+  };
+}
+
+export type GetMessagesParams = {
+  conversationId: string;
+}

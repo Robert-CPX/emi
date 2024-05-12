@@ -19,14 +19,15 @@ interface ChatHistoryWidgetProps {
   history: HistoryItem[];
   emotions: EmotionsMap;
   characters: Character[];
-  onInteractionEnd: (value: boolean) => void;
+  onInteractionEnd: (value: boolean, content: string) => void;
 }
 
 const ChatHistoryWidget = (props: ChatHistoryWidgetProps) => {
-  const { history } = props
+  const { history, onInteractionEnd } = props
   const [combinedChatHistory, setCombinedChatHistory] = useState<CombinedHistoryItem[]>([]);
   const [isInteractionEnd, setIsInteractionEnd] = useState<boolean>(true);
   const endOfMessagesRef = useRef<HTMLDivElement>(null)
+  const spanRef = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -86,12 +87,11 @@ const ChatHistoryWidget = (props: ChatHistoryWidgetProps) => {
         event.interactionId === lastInteractionId &&
         event.type === CHAT_HISTORY_TYPE.INTERACTION_END
     );
-    const isInteractionEnd = !hasActors || (!!interactionEnd && !!currentRecord);
-
-    setIsInteractionEnd(isInteractionEnd);
-    props.onInteractionEnd(isInteractionEnd);
+    const isEnd = !hasActors || (!!interactionEnd && !!currentRecord);
+    setIsInteractionEnd(isEnd);
+    onInteractionEnd(isEnd, isEnd ? spanRef.current?.textContent || "" : "");
     setCombinedChatHistory(mergedRecords);
-  }, [history, props]);
+  }, [history, onInteractionEnd]);
 
   const getContent = (
     message:
@@ -138,7 +138,7 @@ const ChatHistoryWidget = (props: ChatHistoryWidgetProps) => {
         return (
           <React.Fragment key={`ChatHistoryGroup-${index}`}>
             <div className={`${actorSource === "PLAYER" ? "chat-user" : "chat-ai"} chat-bubble-container`}>
-              <span className="chat-text">
+              <span className="chat-text" ref={spanRef}>
                 {messages.map((m) => (
                   <React.Fragment key={m.id}>
                     {getContent(m)}{' '}

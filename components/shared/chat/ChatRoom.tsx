@@ -13,6 +13,9 @@ import SingleChatBox from "./SingleChatBox";
 import MiniChatBubble from "./MiniChatBubble";
 import { useEmiTime } from "@/context/EmiTimeProvider";
 import { EmotionsMap } from "@/constants";
+import { useAuth } from '@clerk/nextjs'
+import { getOrCreateConversation } from '@/lib/actions/conversation.actions';
+import { saveMessages } from '@/lib/actions/message.actions';
 
 interface ChatRoomProps {
   characters: Character[];
@@ -29,19 +32,50 @@ const ChatRoom = (props: ChatRoomProps) => {
   const { mode } = useEmi()
   const [isSneaking, setIsSneaking] = useState(false) // a flag to show/hide ChatHistory on desktop
   const { isRunning } = useEmiTime()
+  const [currentConversationId, setCurrentConversationId] = useState<string>('');
+  const { userId } = useAuth()
+
+  const saveConversation = useCallback(async (role: "user" | "emi", content: string) => {
+    if (!currentConversationId || !userId) return
+    const message = {
+      sender: role === "user" ? userId : "emi",
+      content,
+      contentType: "text",
+    }
+    await saveMessages({ conversationId: currentConversationId, ...message })
+  }, [currentConversationId, userId]);
 
   const handleTextSend = useCallback((input: string) => {
     connection.sendText(input)
+    saveConversation("user", input)
     setText("")
-  }, [connection])
+  }, [connection, saveConversation])
 
   const handleUserClickMiniChatBubble = () => {
     setIsSneaking(!isSneaking)
   }
+
+  const handleInteractionEnd = useCallback((interactionEnd: boolean, content: string) => {
+    setIsInteractionEnd(interactionEnd)
+    if (interactionEnd && content.length) {
+      saveConversation("emi", content)
+    }
+  }, [saveConversation])
+
   useEffect(() => {
     // reset chat history's UI when mode changes
     setIsSneaking(false)
   }, [mode])
+
+  useEffect(() => {
+    if (!userId) return
+    const initConversation = async () => {
+      const conversation = await getOrCreateConversation({ userId })
+      if (!conversation) return
+      setCurrentConversationId(conversation.id)
+    }
+    initConversation()
+  }, [userId]);
 
   return (
     <>
@@ -52,7 +86,7 @@ const ChatRoom = (props: ChatRoomProps) => {
               history={chatHistory}
               characters={characters}
               emotions={props.emotions}
-              onInteractionEnd={setIsInteractionEnd}
+              onInteractionEnd={handleInteractionEnd}
             />
           </div>
           <InputControl

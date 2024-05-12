@@ -4,17 +4,28 @@
 import React from "react";
 import { useEmi } from "@/context/EmiProvider"
 import { useEffect, useState } from "react"
-import { ChatResponse } from "../../../constants"
-import { MockChatHistory } from "@/constants/constants"
 import Image from "next/image";
+import { getOrCreateConversation } from "@/lib/actions/conversation.actions";
+import { fetchMessages } from "@/lib/actions/message.actions";
+import { useAuth } from '@clerk/nextjs'
+import Message from "@/database/models/message.model";
 
 const ChatHistoryMobile = () => {
   const { mode } = useEmi()
-  const [chatHistory, setChatHistory] = useState<ChatResponse[]>([])
+  const [chatHistory, setChatHistory] = useState<Message[]>([])
+  const { userId } = useAuth()
 
   useEffect(() => {
-    setChatHistory(MockChatHistory)
-  }, [])
+    if (!userId) return
+    const initConversation = async () => {
+      const conversation = await getOrCreateConversation({ userId })
+      if (!conversation) return
+      const messages = await fetchMessages({ conversationId: conversation.id })
+      if (!messages) return
+      setChatHistory(messages)
+    }
+    initConversation()
+  }, [userId]);
 
   return (
     <section className={`absolute inset-0 flex size-full flex-col bg-light/80 backdrop-blur-md md:hidden ${mode === 'dredge-up' ? "flex" : "hidden"}`}>
@@ -22,7 +33,7 @@ const ChatHistoryMobile = () => {
       <div className="no-scrollbar flex size-full grow flex-col overflow-auto px-4">
         {chatHistory.map((message, index) => (
           <React.Fragment key={index}>
-            {message.role !== 'user' && (
+            {message.sender === 'emi' ? (
               <div className="flex items-start justify-start gap-1">
                 <Image src="assets/images/emi_profile.svg" width={48} height={48} alt="avatar" className="my-2 size-[48px] rounded-full bg-[#D6DDFF]" />
                 <div
@@ -31,13 +42,13 @@ const ChatHistoryMobile = () => {
                   <span className="chat-text text-dark">{message.content}</span>
                 </div>
               </div>
-
+            ) : (
+              <div
+                className="chat-bubble-container-mobile-history chat-bubble-mobile-history-user"
+              >
+                <span className="chat-text text-dark">{message.content}</span>
+              </div>
             )}
-            <div
-              className="chat-bubble-container-mobile-history chat-bubble-mobile-history-user"
-            >
-              <span className="chat-text text-dark">{message.content}</span>
-            </div>
           </React.Fragment>
         ))}
       </div>
