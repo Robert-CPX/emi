@@ -30,8 +30,10 @@ const Chat = () => {
   const [emotions, setEmotions] = useState<EmotionsMap>({});
   const { setEmotion: setEmiEmotion, setIsSpeaking: setEmiIsSpeaking} = useEmi();
   const [queue, setQueue] = useState<AudioQueueItem[]>([]);
+  const [textQueue, setTextQueue] = useState<string[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   let textList: string[] = [];
 
   const onHistoryChange = useCallback((history: HistoryItem[]) => {
@@ -75,10 +77,7 @@ const Chat = () => {
           }
           if (inworldPacket.isText()) {
             setLastMessages(inworldPacket.text.text);
-            textList.push(inworldPacket.text.text);
-          }
-          if (inworldPacket.isInteractionEnd()) {
-            handleTextToSpeechGroup();
+            setTextQueue(prevQueue => [...prevQueue, inworldPacket.text.text]);
           }
         },
       });
@@ -101,6 +100,39 @@ const Chat = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [onHistoryChange, savedDialog]
   );
+
+// Function to handle individual TTS requests
+const handleTextToSpeech = async () => {
+  if (textQueue.length === 0) return; // If no texts are queued, do nothing
+  const text = textQueue[0]; // Get the first text in the queue
+  setIsProcessing(true);
+  
+  console.time('fetch tts result')
+  try {
+    const response = await fetch("/api/modal/tts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text }),
+    });
+    if (!response.ok) {
+      throw new Error(`Error fetching TTS for text: ${text}`);
+    }
+    const audioBlob = await response.blob();
+    const newAudioUrl = URL.createObjectURL(audioBlob);
+    // Process or queue the TTS result as needed
+    console.timeEnd('fetch tts result')
+    setQueue(prevQueue => [...prevQueue, { id: 0, url: newAudioUrl, text }]);
+  } catch (error) {
+    console.error(`Failed to fetch TTS for text: ${text}`, error);
+    // Optionally handle errors, maybe retry, etc.
+  } finally {
+    setIsProcessing(false);
+    // Remove the processed text from the queue and continue with the next
+    setTextQueue(prevQueue => prevQueue.slice(1));
+  }
+};
 
   const handleTextToSpeechGroup = async () => {
     const fetchPromises = textList.map((text, index) =>
@@ -126,10 +158,8 @@ const Chat = () => {
           return { id: index, url: "", text }; // Ensure the item remains in the queue
         })
     );
-    console.time('fetch tts result')
     // Execute all promises concurrently while maintaining their original order
     const unorderedResults = await Promise.all(fetchPromises);
-    console.timeEnd('fetch tts result')
     // Order results based on their original index
     const orderedResults = unorderedResults.sort((a, b) => a.id - b.id);
     textList = [];
@@ -163,6 +193,14 @@ const Chat = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queue, isPlaying]);
+  
+  // Automatically play audio when `audioUrl` is set
+  useEffect(() => {
+    if(!isProcessing) {
+      handleTextToSpeech()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [textQueue]);
 
   useEffect(() => {
     if (!emotionEvent) return;
