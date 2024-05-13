@@ -126,9 +126,10 @@ const Chat = () => {
           return { id: index, url: "", text }; // Ensure the item remains in the queue
         })
     );
+    console.time('fetch tts result')
     // Execute all promises concurrently while maintaining their original order
     const unorderedResults = await Promise.all(fetchPromises);
-
+    console.timeEnd('fetch tts result')
     // Order results based on their original index
     const orderedResults = unorderedResults.sort((a, b) => a.id - b.id);
     textList = [];
