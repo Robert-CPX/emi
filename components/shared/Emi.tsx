@@ -128,17 +128,17 @@ const Emi = () => {
       // pencil.position.copy(relativeOffsetPosition);
       // boneToAttachTo.updateMatrixWorld(true);
 
-      // load chair
-      const gltfChair = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.chair);
-      scene.add(gltfChair.scene);
+      // // load chair
+      // const gltfChair = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.chair);
+      // scene.add(gltfChair.scene);
 
-      // load desk
-      const gltfDesk = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.desk);
-      scene.add(gltfDesk.scene);
+      // // load desk
+      // const gltfDesk = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.desk);
+      // scene.add(gltfDesk.scene);
 
-      // load table top items
-      const gltfTableTopItems = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.tableTop);
-      scene.add(gltfTableTopItems.scene);
+      // // load table top items
+      // const gltfTableTopItems = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.tableTop);
+      // scene.add(gltfTableTopItems.scene);
 
       const animate = () => {
         const deltaTime = clockRef.current?.getDelta();
