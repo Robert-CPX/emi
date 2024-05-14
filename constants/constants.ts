@@ -25,6 +25,7 @@ export const EMI_RESOURCES = {
 export const EMI_ANIMATIONS: { [key: string]: { idle: string, gestures: string[] } } = {
   DEFAULT: { idle: "idle.vrma", gestures: [] },
   INTRO: { idle: "Intro.vrma", gestures: [] },
+  CLICK: { idle: "click3.vrma", gestures: [] },
   AFFECTION: { idle: "idle.vrma", gestures: ["talk1.vrma", "talk2.vrma"] },
   ANGER: { idle: "angry.vrma", gestures: ["angrypoint.vrma", "standing_arguing.vrma"] },
   BELLIGERENCE: { idle: "boxing.vrma", gestures: ["talk1.vrma"] },
