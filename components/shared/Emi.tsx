@@ -21,7 +21,7 @@ const Emi = () => {
 
   const speakAnimationRef = useRef<THREE.AnimationAction | null>(null);
 
-  const clickListenerAddedRef = useRef<boolean>(false); // prevent click finish listener added twice
+  const uninterruptibleRef = useRef<boolean>(false); // if is playing an uninterruptible animation
 
   useEffect(() => {
     if (!emotion) return;
@@ -139,45 +139,6 @@ const Emi = () => {
       // load table top items
       const gltfTableTopItems = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.tableTop);
       scene.add(gltfTableTopItems.scene);
-      
-      // setup listener for click events
-      const raycaster = new THREE.Raycaster();
-      const mouse = new THREE.Vector2();
-
-      const onMouseClick = (event: MouseEvent) => {
-        // Calculate mouse position in normalized device coordinates
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-        // Update the raycaster with the camera and mouse position
-        raycaster.setFromCamera(mouse, camera);
-
-        // Check for intersections
-        const intersects = raycaster.intersectObject(vrmRef.current.scene, true);
-
-        if (intersects.length > 0) {
-          handleBodyPartClick(intersects[0].object);
-        }
-      };
-      window.addEventListener('click', onMouseClick, false);
-
-      const handleBodyPartClick = (object: THREE.Object3D) => {
-        // Assuming each body part has a unique name
-        console.log(object.name);
-        if (!clickListenerAddedRef.current) {
-          const onFinished = () => {
-            if (!mixerRef.current) return; // Check for null
-            mixerRef.current.removeEventListener('finished', onFinished); // Clean up the listener
-            clickListenerAddedRef.current = false; // Update flag
-            loadAndPlayAnimation(EMI_ANIMATIONS.DEFENSIVENESS.idle); // Play idle animation in loop
-          };
-          mixerRef.current?.addEventListener('finished', onFinished);
-          clickListenerAddedRef.current = true; // Update flag
-        }
-
-        loadAndPlayAnimation(EMI_ANIMATIONS.CLICK.idle, false)
-        console.log("loadAndPlayAnimation(EMI_ANIMATIONS.CLICK.idle, false)")
-      }
 
       const animate = () => {
         const deltaTime = clockRef.current?.getDelta();
@@ -200,10 +161,48 @@ const Emi = () => {
 
     window.addEventListener('resize', handleResize);
 
+    // setup listener for click events
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    const onMouseClick = (event: MouseEvent) => {
+      // Calculate mouse position in normalized device coordinates
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      // Update the raycaster with the camera and mouse position
+      raycaster.setFromCamera(mouse, camera);
+
+      // Check for intersections
+      const intersects = raycaster.intersectObject(vrmRef.current.scene, true);
+
+      if (intersects.length > 0) {
+        handleBodyPartClick(intersects[0].object);
+      }
+    };
+
+    window.addEventListener('click', onMouseClick, false);
+
+    const handleBodyPartClick = (object: THREE.Object3D) => {
+      // Assuming each body part has a unique name
+      console.log(object.name);
+      if (uninterruptibleRef.current) return;
+      const onFinished = () => {
+        if (!mixerRef.current) return; // Check for null
+        mixerRef.current.removeEventListener('finished', onFinished); // Clean up the listener
+        loadAndPlayAnimation(EMI_ANIMATIONS.DEFENSIVENESS.idle); // Play idle animation in loop
+        uninterruptibleRef.current = false;
+      };
+      mixerRef.current?.addEventListener('finished', onFinished);
+      loadAndPlayAnimation(EMI_ANIMATIONS.CLICK.idle, false)
+      uninterruptibleRef.current = true;
+    }
+
     return () => {
       window.removeEventListener('resize', handleResize);
       // eslint-disable-next-line react-hooks/exhaustive-deps
       mountRef.current?.removeChild(renderer.domElement);
+      window.removeEventListener('click', onMouseClick, false);
     };
   }, []);
 
