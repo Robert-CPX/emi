@@ -185,18 +185,14 @@ const Emi = () => {
     window.addEventListener('click', onMouseClick, false);
 
     const handleBodyPartClick = (object: THREE.Object3D) => {
-      // Assuming each body part has a unique name
-      console.log(object.name);
       let animation = undefined;
       for (const area in EMI_CLICK_AREA) {
         if (EMI_CLICK_AREA[area].meshes.includes(object.name)) {
           animation = EMI_CLICK_AREA[area].animation;
-          console.log("found animation in " + area +", with: " + animation)
         }
       }
       if (!animation){
         animation = EMI_CLICK_AREA.OTHER.animation;
-        console.log("did not find animation, falling back to: " + animation)
       }
       
       const onFinished = () => {
