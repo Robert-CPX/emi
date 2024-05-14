@@ -25,7 +25,8 @@ export const EMI_RESOURCES = {
 export const EMI_ANIMATIONS: { [key: string]: { idle: string, gestures: string[] } } = {
   DEFAULT: { idle: "idle.vrma", gestures: [] },
   INTRO: { idle: "Intro.vrma", gestures: [] },
-  CLICK: { idle: "click3.vrma", gestures: [] },
+  CLICK_HEAD: { idle: "click3.vrma", gestures: [] },
+  CLICK_CHEST: { idle: "clickchest2.vrma", gestures: [] },
   AFFECTION: { idle: "idle.vrma", gestures: ["talk1.vrma", "talk2.vrma"] },
   ANGER: { idle: "angry.vrma", gestures: ["angrypoint.vrma", "standing_arguing.vrma"] },
   BELLIGERENCE: { idle: "boxing.vrma", gestures: ["talk1.vrma"] },
@@ -44,6 +45,21 @@ export const EMI_ANIMATIONS: { [key: string]: { idle: string, gestures: string[]
   TENSION: { idle: "idle_surprised.vrma", gestures: ["surprised.vrma"] },
   VALIDATION: { idle: "idle.vrma", gestures: ["head_nod_yes.vrma"] },
   WHINING: { idle: "idle_sad.vrma", gestures: ["talk1.vrma"] },
+}
+
+export const EMI_CLICK_AREA: { [area: string]: { animation: string, meshes: string[] } } = {
+  HEAD: { animation: "click3.vrma", 
+  meshes: ["Hair", 
+  "Face_(merged)baked_custom_1", 
+  "Face_(merged)baked_custom_2",
+  "Face_(merged)baked_custom_3",
+  "Face_(merged)baked_custom_4",
+  "Face_(merged)baked_custom_5",
+  "Face_(merged)baked_custom_6",
+  "Face_(merged)baked_custom_6" ] },
+  
+  CHEST: { animation: "clickchest2.vrma", meshes: ["N00_007_02_Tops_01_CLOTH_(Instance)", "外套"] },
+  OTHER: { animation: "clickchest2.vrma", meshes: [] }
 }
 
 export const EMOJIS: { [key: string]: string[] } = {

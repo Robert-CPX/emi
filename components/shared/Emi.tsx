@@ -8,7 +8,7 @@ import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
 import { createVRMAnimationClip, VRMAnimationLoaderPlugin, VRMLookAtQuaternionProxy } from '@pixiv/three-vrm-animation';
 import { useEmi } from '@/context/EmiProvider';
 import { getAnimation } from '@/lib/utils';
-import { EMI_RESOURCES, EMI_ANIMATIONS } from '@/constants/constants';
+import { EMI_RESOURCES, EMI_ANIMATIONS, EMI_CLICK_AREA } from '@/constants/constants';
 
 const Emi = () => {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -166,6 +166,7 @@ const Emi = () => {
     const mouse = new THREE.Vector2();
 
     const onMouseClick = (event: MouseEvent) => {
+      if (uninterruptibleRef.current) return;
       // Calculate mouse position in normalized device coordinates
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -186,7 +187,18 @@ const Emi = () => {
     const handleBodyPartClick = (object: THREE.Object3D) => {
       // Assuming each body part has a unique name
       console.log(object.name);
-      if (uninterruptibleRef.current) return;
+      let animation = undefined;
+      for (const area in EMI_CLICK_AREA) {
+        if (EMI_CLICK_AREA[area].meshes.includes(object.name)) {
+          animation = EMI_CLICK_AREA[area].animation;
+          console.log("found animation in " + area +", with: " + animation)
+        }
+      }
+      if (!animation){
+        animation = EMI_CLICK_AREA.OTHER.animation;
+        console.log("did not find animation, falling back to: " + animation)
+      }
+      
       const onFinished = () => {
         if (!mixerRef.current) return; // Check for null
         mixerRef.current.removeEventListener('finished', onFinished); // Clean up the listener
@@ -194,7 +206,7 @@ const Emi = () => {
         uninterruptibleRef.current = false;
       };
       mixerRef.current?.addEventListener('finished', onFinished);
-      loadAndPlayAnimation(EMI_ANIMATIONS.CLICK.idle, false)
+      loadAndPlayAnimation(animation, false)
       uninterruptibleRef.current = true;
     }
 
