@@ -27,11 +27,12 @@ const Emi = () => {
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
 
+  // constants
   const focusModeCameraPositionRef = useRef<[number, number, number]>([0, 1.3, 2.4]);
   const focusModeCameraTargetRef = useRef<[number, number, number]>([0, 0.5, 0]);
   const companionModeCameraPositionRef = useRef<[number, number, number]>([0, 1.5, 2.4]);
   const companionModeCameraTargetRef = useRef<[number, number, number]>([0, 1.2, 0]);
-
+  const focusLayerIdxRef = useRef<number>(1);
   
   useEffect(() => {
     if (!mode) return;
@@ -107,10 +108,6 @@ const Emi = () => {
     controls.target.set(...companionModeCameraTargetRef.current);
     controls.update();
 
-
-    // Enable all layers initially (this is optional, only if you want to reset)
-    console.log("camera " + camera.layers.mask.toString(2).padStart(32, '0'));
-
     const ambientLight = new THREE.AmbientLight(0xffffff, 2); // soft white light
     scene.add(ambientLight);
 
@@ -136,8 +133,6 @@ const Emi = () => {
       camera.add(lookAtTarget);
       vrm.lookAt.target = lookAtTarget;
       scene.add(vrm.scene);
-
-      console.log("vrm.scene.layers " + vrm.scene.layers.mask.toString(2).padStart(32, '0'));
       mixerRef.current = new THREE.AnimationMixer(vrm.scene);
       clockRef.current = new THREE.Clock();
 
@@ -153,13 +148,16 @@ const Emi = () => {
       const clip = new THREE.AnimationClip( 'Animation', 0.4 + speak_interval, [ speakTrack ] );
       speakAnimationRef.current = mixerRef.current?.clipAction( clip )
 
+      async function loadModel(resource: string, layer: number = 0): Promise<THREE.Group> {
+        const gltf = await gltfLoaderRef.current.loadAsync(resource);
+        const model = gltf.scene;
+        model.traverse((object: THREE.Object3D) => object.layers.set(layer));
+        scene.add(model);
+        return model;
+      }
+
       //load pencil
-      const gltfPencil = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.pencil);
-      const pencil = gltfPencil.scene;
-      pencil.traverse((object: THREE.Object3D) => {
-        object.layers.set(1);
-      });
-      scene.add(pencil);
+      const pencil = await loadModel(EMI_RESOURCES.pencil, focusLayerIdxRef.current);
       const boneToAttachTo = vrm.humanoid.getNormalizedBoneNode('rightThumbDistal');
       boneToAttachTo.add(pencil);
       const relativeOffsetPosition = new THREE.Vector3(0, -0.022, -0.0044);
@@ -168,32 +166,9 @@ const Emi = () => {
       pencil.position.copy(relativeOffsetPosition);
       boneToAttachTo.updateMatrixWorld(true);
 
-      // load chair
-      const gltfChair = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.chair);
-      const chair = gltfChair.scene;
-      chair.traverse((object: THREE.Object3D) => {
-        object.layers.set(1);
-      });
-      console.log("chair " + chair.layers.mask.toString(2).padStart(32, '0'));
-      scene.add(chair);
-
-      // load desk
-      const gltfDesk = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.desk);
-      const desk = gltfDesk.scene
-      desk.traverse((object: THREE.Object3D) => {
-        object.layers.set(1);
-      });
-      console.log("desk " + desk.layers.mask.toString(2).padStart(32, '0'));
-      scene.add(desk);
-
-      // load table top items
-      const gltfTableTopItems = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.tableTop);
-      const tableTopItems = gltfTableTopItems.scene;
-      tableTopItems.traverse((object: THREE.Object3D) => {
-        object.layers.set(1);
-      });
-      console.log("tableTopItems " + tableTopItems.layers.mask.toString(2).padStart(32, '0'));
-      scene.add(tableTopItems);
+      await loadModel(EMI_RESOURCES.chair, focusLayerIdxRef.current);
+      await loadModel(EMI_RESOURCES.desk, focusLayerIdxRef.current);
+      await loadModel(EMI_RESOURCES.tableTop, focusLayerIdxRef.current);
 
       const animate = () => {
         const deltaTime = clockRef.current?.getDelta();
