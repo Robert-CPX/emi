@@ -23,12 +23,6 @@ const Emi = () => {
 
   const uninterruptibleRef = useRef<boolean>(false); // if is playing an uninterruptible animation
 
-  // focus mode items
-  const pencilRef = useRef<THREE.Object3D | null>(null);
-  const chairRef = useRef<THREE.Object3D | null>(null);
-  const deskRef = useRef<THREE.Object3D | null>(null);
-  const tableTopItemsRef = useRef<THREE.Object3D | null>(null);
-
   // scene objects
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
@@ -37,33 +31,25 @@ const Emi = () => {
   const focusModeCameraTargetRef = useRef<[number, number, number]>([0, 0.5, 0]);
   const companionModeCameraPositionRef = useRef<[number, number, number]>([0, 1.5, 2.4]);
   const companionModeCameraTargetRef = useRef<[number, number, number]>([0, 1.2, 0]);
+
   
   useEffect(() => {
     if (!mode) return;
     console.log(mode);
 
-    const updateVisibility = (refs: React.MutableRefObject<THREE.Object3D<THREE.Object3DEventMap> | null>[], visibility: boolean) => {
-      refs.forEach(ref => {
-        if (ref.current) {
-          ref.current.visible = visibility;
-        }
-      });
-    };
-
-    const focusModeItems = [pencilRef, chairRef, deskRef, tableTopItemsRef];
-    
     if (mode === "focus") {
-      updateVisibility(focusModeItems, true);
+      cameraRef.current?.layers.enable(1);
       cameraRef.current?.position.set(...focusModeCameraPositionRef.current);
       controlsRef.current?.target.set(...focusModeCameraTargetRef.current);
-      loadAndPlayAnimation(EMI_ANIMATIONS.WRITING.idle, true, 0);
+      uninterruptibleRef.current = false;
+      loadAndPlayAnimation(EMI_ANIMATIONS.WRITING.idle, true, 0.3);
       uninterruptibleRef.current = true;
     } else if (mode === "companion") {
-      updateVisibility(focusModeItems, false);
+      cameraRef.current?.layers.disable(1);
       cameraRef.current?.position.set(...companionModeCameraPositionRef.current);
       controlsRef.current?.target.set(...companionModeCameraTargetRef.current);
-      loadAndPlayAnimation(EMI_ANIMATIONS.DEFAULT.idle, true, 0);
       uninterruptibleRef.current = false;
+      loadAndPlayAnimation(EMI_ANIMATIONS.DEFAULT.idle, true, 0.3);
     }
   }, [mode]);
 
@@ -121,6 +107,10 @@ const Emi = () => {
     controls.target.set(...companionModeCameraTargetRef.current);
     controls.update();
 
+
+    // Enable all layers initially (this is optional, only if you want to reset)
+    console.log("camera " + camera.layers.mask.toString(2).padStart(32, '0'));
+
     const ambientLight = new THREE.AmbientLight(0xffffff, 2); // soft white light
     scene.add(ambientLight);
 
@@ -147,6 +137,7 @@ const Emi = () => {
       vrm.lookAt.target = lookAtTarget;
       scene.add(vrm.scene);
 
+      console.log("vrm.scene.layers " + vrm.scene.layers.mask.toString(2).padStart(32, '0'));
       mixerRef.current = new THREE.AnimationMixer(vrm.scene);
       clockRef.current = new THREE.Clock();
 
@@ -165,8 +156,9 @@ const Emi = () => {
       //load pencil
       const gltfPencil = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.pencil);
       const pencil = gltfPencil.scene;
-      pencilRef.current = pencil;
-      pencil.visible = false;
+      pencil.traverse((object: THREE.Object3D) => {
+        object.layers.set(1);
+      });
       scene.add(pencil);
       const boneToAttachTo = vrm.humanoid.getNormalizedBoneNode('rightThumbDistal');
       boneToAttachTo.add(pencil);
@@ -178,21 +170,30 @@ const Emi = () => {
 
       // load chair
       const gltfChair = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.chair);
-      chairRef.current = gltfChair.scene
-      chairRef.current.visible = false;
-      scene.add(chairRef.current);
+      const chair = gltfChair.scene;
+      chair.traverse((object: THREE.Object3D) => {
+        object.layers.set(1);
+      });
+      console.log("chair " + chair.layers.mask.toString(2).padStart(32, '0'));
+      scene.add(chair);
 
       // load desk
       const gltfDesk = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.desk);
-      deskRef.current = gltfDesk.scene
-      deskRef.current.visible = false;
-      scene.add(deskRef.current);
+      const desk = gltfDesk.scene
+      desk.traverse((object: THREE.Object3D) => {
+        object.layers.set(1);
+      });
+      console.log("desk " + desk.layers.mask.toString(2).padStart(32, '0'));
+      scene.add(desk);
 
       // load table top items
       const gltfTableTopItems = await gltfLoaderRef.current.loadAsync(EMI_RESOURCES.tableTop);
-      tableTopItemsRef.current = gltfTableTopItems.scene;
-      tableTopItemsRef.current.visible = false;
-      scene.add(tableTopItemsRef.current);
+      const tableTopItems = gltfTableTopItems.scene;
+      tableTopItems.traverse((object: THREE.Object3D) => {
+        object.layers.set(1);
+      });
+      console.log("tableTopItems " + tableTopItems.layers.mask.toString(2).padStart(32, '0'));
+      scene.add(tableTopItems);
 
       const animate = () => {
         const deltaTime = clockRef.current?.getDelta();
@@ -252,8 +253,8 @@ const Emi = () => {
       const onFinished = () => {
         if (!mixerRef.current) return; // Check for null
         mixerRef.current.removeEventListener('finished', onFinished); // Clean up the listener
-        loadAndPlayAnimation(EMI_ANIMATIONS.DEFENSIVENESS.idle); // Play idle animation in loop
         uninterruptibleRef.current = false;
+        loadAndPlayAnimation(EMI_ANIMATIONS.DEFENSIVENESS.idle); // Play idle animation in loop
       };
       mixerRef.current?.addEventListener('finished', onFinished);
       loadAndPlayAnimation(animation, false)
@@ -269,30 +270,31 @@ const Emi = () => {
   }, []);
 
   const loadAndPlayAnimation = async (filename: string, shouldLoop = true, fadeDuration = 0.5) => {
-  const fullPath = EMI_RESOURCES.emotionPath + filename;
-  console.log("playing animation " + fullPath);
-  if (!mixerRef.current) return;
+    if (uninterruptibleRef.current) return;
+    const fullPath = EMI_RESOURCES.emotionPath + filename;
+    console.log("playing animation " + fullPath);
+    if (!mixerRef.current) return;
 
-  const gltfVrma = await gltfLoaderRef.current.loadAsync(fullPath);
-  const vrmAnimation = gltfVrma.userData.vrmAnimations[0];
-  const clip = createVRMAnimationClip(vrmAnimation, vrmRef.current);
+    const gltfVrma = await gltfLoaderRef.current.loadAsync(fullPath);
+    const vrmAnimation = gltfVrma.userData.vrmAnimations[0];
+    const clip = createVRMAnimationClip(vrmAnimation, vrmRef.current);
 
-  // Create a new action for the new animation clip
-  const newAction = mixerRef.current?.clipAction(clip);
-  newAction.clampWhenFinished = true;
-  newAction.loop = shouldLoop ? THREE.LoopRepeat : THREE.LoopOnce;
-  
-  // If there's a currently active action, fade it out
-  if (mainAnimationRef.current) {
-    newAction.weight = 1;
-    // Start playing the new action first
-    newAction.play();
-    // Use crossFadeTo to transition from the current action to the new action
-    mainAnimationRef.current.crossFadeTo(newAction, fadeDuration, true);
-  } else {
-    newAction.play();
-  }
-  mainAnimationRef.current = newAction;
+    // Create a new action for the new animation clip
+    const newAction = mixerRef.current?.clipAction(clip);
+    newAction.clampWhenFinished = true;
+    newAction.loop = shouldLoop ? THREE.LoopRepeat : THREE.LoopOnce;
+    
+    // If there's a currently active action, fade it out
+    if (mainAnimationRef.current) {
+      newAction.weight = 1;
+      // Start playing the new action first
+      newAction.play();
+      // Use crossFadeTo to transition from the current action to the new action
+      mainAnimationRef.current.crossFadeTo(newAction, fadeDuration, true);
+    } else {
+      newAction.play();
+    }
+    mainAnimationRef.current = newAction;
   };
 
   return <div ref={mountRef} />;
