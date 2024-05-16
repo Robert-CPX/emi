@@ -61,6 +61,10 @@ export const EMI_CLICK_AREA: { [area: string]: { animation: string, meshes: stri
   OTHER: { animation: "clickchest2.vrma", meshes: [] }
 }
 
+export const AUDIO_RESOURCES = {
+  BGM_DEFAULT: "assets/audio/BGM.wav"
+}
+
 export const EMOJIS: { [key: string]: string[] } = {
   AFFECTION: ['🥰', '😊', '😘', '😍', '🤗'],
   ANGER: ['😤', '😠', '😡', '🤬'],
