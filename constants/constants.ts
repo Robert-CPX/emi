@@ -62,7 +62,10 @@ export const EMI_CLICK_AREA: { [area: string]: { animation: string, meshes: stri
 }
 
 export const AUDIO_RESOURCES = {
-  BGM_DEFAULT: "assets/audio/BGM.wav"
+  BGM_DEFAULT: "assets/audio/BGM.wav",
+  CLICK_SOUND: "assets/audio/camera_click2.wav",
+  // CLICK_SOUND: "assets/audio/click.wav",
+  HOVER_SOUND: "assets/audio/click.wav"
 }
 
 export const EMOJIS: { [key: string]: string[] } = {

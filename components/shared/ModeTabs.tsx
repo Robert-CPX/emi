@@ -10,6 +10,7 @@ import {
 import { useEmi, ModeType } from "@/context/EmiProvider"
 import { useEmiTime } from "@/context/EmiTimeProvider"
 import { TabDataType } from "@/constants"
+import UISoundWrapper from '@/components/shared/sound/UISoundWrapper';
 
 const ModeTabs = () => {
   const [modeData, setModeData] = useState<TabDataType | null>(null);
@@ -40,6 +41,7 @@ const ModeTabs = () => {
           className="flex items-center justify-evenly"
           defaultValue={currentMode}>
           {modeData?.map((mode) => (
+            <UISoundWrapper key={mode.name}>
             <TabsTrigger
               key={mode.name}
               value={mode.value}
@@ -48,6 +50,7 @@ const ModeTabs = () => {
             >
               {mode.name}
             </TabsTrigger>
+            </UISoundWrapper>
           ))}
         </TabsList>
       </Tabs>
