@@ -10,7 +10,7 @@ const BackgroundMusic: React.FC = () => {
       src: [AUDIO_RESOURCES.BGM_DEFAULT],
       autoplay: true,
       loop: true,
-      volume: 0.4,
+      volume: 0.0,
     });
 
     sound.play();

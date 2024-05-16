@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge"
 import { EMOJIS, EMI_ANIMATIONS } from "@/constants/constants"
 import { MockEmotionList } from "@/constants/constants"
 import { DialogPhrase, EmotionBehavior, EmotionEvent } from "@inworld/web-core"
+import { AUDIO_RESOURCES } from "@/constants/constants"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -98,3 +99,9 @@ export function getEmoji(behavior: EmotionBehavior): string | null {
     ? emoji[0]
     : emoji[Math.floor(Math.random() * emoji.length)];
 }
+
+export const playSound = (url: string) => {
+  const audio = new Audio(url);
+  audio.play();
+  console.log("playing sound");
+};

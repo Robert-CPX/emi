@@ -6,6 +6,7 @@ import { Loader2, ChevronUp, ChevronDown } from "lucide-react"
 import SignedInBit from "./SignedInBit"
 import { useEmi } from "@/context/EmiProvider"
 import { useState } from "react"
+import UISoundWrapper from "@/components/shared/sound/UISoundWrapper"
 
 const BrandMenu = () => {
   const { mode } = useEmi()
@@ -18,17 +19,19 @@ const BrandMenu = () => {
             <Loader2 size={48} className="size-12 animate-spin text-dark" />
           </ClerkLoading>
           <ClerkLoaded>
-            <DropdownMenu
-              onOpenChange={(open) => setIsOpen(open)}
-            >
-              <DropdownMenuTrigger asChild>
-                <Button className="h-[48px] w-[198px] gap-2 font-lemon text-[1.25rem] font-normal leading-[26px] focus-visible:ring-0 focus-visible:ring-offset-0">
-                  StudyCafe
-                  {isOpen ? <ChevronDown /> : <ChevronUp />}
-                </Button>
-              </DropdownMenuTrigger>
-              <SignedInBit />
-            </DropdownMenu>
+            <UISoundWrapper>
+              <DropdownMenu
+                onOpenChange={(open) => setIsOpen(open)}
+              >
+                <DropdownMenuTrigger asChild>
+                  <Button className="h-[48px] w-[198px] gap-2 font-lemon text-[1.25rem] font-normal leading-[26px] focus-visible:ring-0 focus-visible:ring-offset-0">
+                    StudyCafe
+                    {isOpen ? <ChevronDown /> : <ChevronUp />}
+                  </Button>
+                </DropdownMenuTrigger>
+                <SignedInBit />
+              </DropdownMenu>
+            </UISoundWrapper>
           </ClerkLoaded>
         </div>
       ) : (
