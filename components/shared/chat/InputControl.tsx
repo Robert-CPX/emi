@@ -5,6 +5,9 @@ import { Textarea } from "@/components/ui/textarea"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 
+import { playSound } from "@/lib/utils"
+import { AUDIO_RESOURCES } from "@/constants/constants"
+
 type InputControlProps = {
   text: string;
   setText: (text: string) => void;
@@ -22,6 +25,7 @@ const InputControl = ({
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!text.trim()) return
+    playSound(AUDIO_RESOURCES.MESSAGE_SOUND)
     handleTextSend(text)
     setText("")
   }
@@ -31,6 +35,7 @@ const InputControl = ({
     if (!trimmedText) return
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault()
+      playSound(AUDIO_RESOURCES.MESSAGE_SOUND)
       handleTextSend(trimmedText)
       setText("")
     }

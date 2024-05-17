@@ -10,6 +10,9 @@ import { useEmi } from '@/context/EmiProvider';
 import { getAnimation } from '@/lib/utils';
 import { EMI_RESOURCES, EMI_ANIMATIONS, EMI_CLICK_AREA } from '@/constants/constants';
 
+import { playSound } from "@/lib/utils"
+import { AUDIO_RESOURCES } from "@/constants/constants"
+
 const Emi = () => {
   const mountRef = useRef<HTMLDivElement>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
@@ -208,6 +211,7 @@ const Emi = () => {
       const intersects = raycaster.intersectObject(vrmRef.current.scene, true);
 
       if (intersects.length > 0) {
+        playSound(AUDIO_RESOURCES.CLICK_CHARACTER_SOUND);
         handleBodyPartClick(intersects[0].object);
       }
     };
