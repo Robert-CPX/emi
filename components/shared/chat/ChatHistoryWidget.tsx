@@ -13,7 +13,7 @@ import {
 } from "@inworld/web-core";
 import { CombinedHistoryItem, EmotionsMap } from "@/constants";
 import { dateWithMilliseconds, getEmoji } from "@/lib/utils";
-import Typing from "@/components/shared/Typing";
+import Typing from "@/components/shared/chat/Typing";
 
 interface ChatHistoryWidgetProps {
   history: HistoryItem[];

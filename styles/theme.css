@@ -19,6 +19,10 @@
     @apply font-light text-[0.875rem] leading-[17.5px];
   }
 
+  .text-400-12-15 {
+    @apply font-normal text-[0.75rem] leading-[15px];
+  }
+
   .text-400-14-17 {
     @apply font-normal text-[0.875rem] leading-[17.5px];
   }

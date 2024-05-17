@@ -1,4 +1,5 @@
 import { User } from '@/database/models/user.model';
+import { Goal } from '@/database/models/goal.model';
 
 export type CreateUserParams = {
   clerkId: string;
@@ -60,4 +61,34 @@ export type SendMessageParams = {
 
 export type GetMessagesParams = {
   conversationId: string;
+}
+
+export type CreateActivityParams = {
+  type: string;
+  value: number;
+  userId: string;
+  goalId: string;
+}
+
+export type CreateGoalParams = {
+  title: string;
+  description: string;
+  icing?: string;
+  duration: number;
+  userId: string;
+  isLongTerm: boolean;
+  path: string; // For page revalidate purposes
+}
+
+export type UpdateGoalParams = {
+  goalId: string;
+  updateData: Partial<Goal>;
+}
+
+export type GetGoalsParams = {
+  userId: string;
+}
+
+export type DeleteGoalParams = {
+  goalId: string;
 }

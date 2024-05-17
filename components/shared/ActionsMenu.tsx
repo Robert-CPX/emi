@@ -6,7 +6,7 @@ import Image from "next/image"
 import { playSound } from "@/lib/utils"
 import { AUDIO_RESOURCES } from "@/constants/constants"
 
-const ActionMenu = () => {
+const ActionsMenu = () => {
   const { mode } = useEmi()
 
   return (
@@ -14,8 +14,11 @@ const ActionMenu = () => {
       <Link href="/setting" className="flex items-center justify-center bg-transparent" onClick={() => playSound(AUDIO_RESOURCES.CLICK_SOUND)}>
         <Image src="/assets/icons/setting.svg" alt="settings" priority={false} width={48} height={48} />
       </Link>
+      <Link href="/goals" className="flex items-center justify-center bg-transparent">
+        <Image src="/assets/icons/goals.svg" alt="goals" priority={false} width={48} height={48} />
+      </Link>
     </div>
   )
 }
 
-export default ActionMenu
+export default ActionsMenu

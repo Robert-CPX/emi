@@ -2,7 +2,7 @@ import Emi from "@/components/shared/Emi"
 import ModeTabs from "@/components/shared/ModeTabs"
 import BrandMenu from "@/components/shared/brand-menu"
 import { Chat, ChatMobileBackground, ChatHistoryMobile } from "@/components/shared/chat"
-import ActionMenu from "@/components/shared/ActionMenu"
+import ActionsMenu from "@/components/shared/ActionsMenu"
 import { TimeEditor, TimeSelector } from "@/components/shared/timer"
 import { redirect } from 'next/navigation'
 import { auth } from '@clerk/nextjs'
@@ -28,9 +28,9 @@ const Home = () => {
           {/* Time Selector only show on mobile */}
           <TimeSelector />
         </section>
-        {/* ActionMenu is for non-desktop only */}
+        {/* ActionsMenu is for non-desktop only */}
         <section className="mb-auto mt-4 self-end md:hidden">
-          <ActionMenu />
+          <ActionsMenu />
         </section>
         {/* ChatRoom has threen variants, two for desktop and one for mobile */}
         <section className="flex basis-[23%] max-md:mb-4 max-md:max-h-[45%]">

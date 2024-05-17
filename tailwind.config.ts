@@ -21,6 +21,12 @@ const config = {
         primary: {
           DEFAULT: "hsl(36, 100%, 78%)",
           light: "hsl(56, 100%, 87%)",
+          dark: "hsla(36, 94%, 54%, 1)",
+        },
+        purple: {
+          DEFAULT: "hsla(231, 100%, 83%)",
+          light: "hsla(231, 100%, 89%, 0.3)",
+          dark: "hsla(231, 55%, 35%, 1)",
         },
         background: {
           DEFAULT: "hsl(50, 13%, 95%)",

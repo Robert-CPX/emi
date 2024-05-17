@@ -1,3 +1,4 @@
+'use client'
 import Link from "next/link";
 import { X, ChevronLeft } from "lucide-react";
 import { useRouter } from 'next/navigation'
