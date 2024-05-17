@@ -41,13 +41,13 @@ const ModeTabs = () => {
       <div className='absolute inset-0 -z-10 rounded-[22px] bg-dark/50' />
       <Tabs defaultValue="companion" className='w-full text-light'>
         <TabsList
-          className="flex items-center justify-evenly"
+          className="flex items-center justify-evenly gap-2 p-2"
           defaultValue={currentMode}>
           {modeData?.map((mode) => (
             <TabsTrigger
               key={mode.name}
               value={mode.value}
-              className={`min-w-[80px] rounded-[20px] px-5 py-2 text-[0.75rem] font-[700] uppercase leading-[15px] ${currentMode === mode.value && 'border border-dark bg-primary text-dark outline outline-offset-[-2] outline-primary'}`}
+              className={`w-full rounded-[20px] px-5 py-2 text-[0.75rem] font-[700] uppercase leading-[15px] ${currentMode === mode.value && 'border border-dark bg-primary text-dark outline outline-offset-[-2] outline-primary'}`}
               onClick={() => {
                 setMode(mode.value as ModeType);  
                 playSound(AUDIO_RESOURCES.CLICK_SOUND);
