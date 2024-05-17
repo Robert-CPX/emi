@@ -6,6 +6,8 @@ import { Loader2, ChevronUp, ChevronDown } from "lucide-react"
 import SignedInBit from "./SignedInBit"
 import { useEmi } from "@/context/EmiProvider"
 import { useState } from "react"
+import { playSound } from "@/lib/utils"
+import { AUDIO_RESOURCES } from "@/constants/constants"
 
 const BrandMenu = () => {
   const { mode } = useEmi()
@@ -19,7 +21,10 @@ const BrandMenu = () => {
           </ClerkLoading>
           <ClerkLoaded>
             <DropdownMenu
-              onOpenChange={(open) => setIsOpen(open)}
+              onOpenChange={(open) => {
+                setIsOpen(open)
+                playSound(AUDIO_RESOURCES.CLICK_SOUND)
+              }}
             >
               <DropdownMenuTrigger asChild>
                 <Button className="h-[48px] w-[198px] gap-2 font-lemon text-[1.25rem] font-normal leading-[26px] focus-visible:ring-0 focus-visible:ring-offset-0">
