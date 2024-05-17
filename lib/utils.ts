@@ -103,5 +103,4 @@ export function getEmoji(behavior: EmotionBehavior): string | null {
 export const playSound = (url: string) => {
   const audio = new Audio(url);
   audio.play();
-  console.log("playing sound");
 };

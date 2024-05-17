@@ -51,7 +51,6 @@ const ModeTabs = () => {
               onClick={() => {
                 setMode(mode.value as ModeType);  
                 playSound(AUDIO_RESOURCES.CLICK_SOUND);
-                console.log("click2");
               }}
             >
               {mode.name}
