@@ -5,6 +5,7 @@ import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { deleteGoal, archiveGoal } from '@/lib/actions/goal.actions';
 import { toast } from '@/components/ui/use-toast';
+import Confetti from 'react-confetti'
 
 const GoalAlertDialog = () => {
   const searchParams = useSearchParams();
@@ -13,18 +14,23 @@ const GoalAlertDialog = () => {
   const pathname = usePathname()
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isExplosion, setIsExplosion] = useState(false)
 
   const handleConfirmAction = async () => {
     setIsSubmitting(true)
     try {
       if (deleteGoalId) {
         await deleteGoal({ goalId: deleteGoalId, path: pathname });
+        router.push(pathname);
+        toast({ description: 'Goal deleted successfully' })
       } else if (archiveGoalId) {
         await archiveGoal({ goalId: archiveGoalId, path: pathname });
+        setIsExplosion(true)
+        setTimeout(() => {
+          router.push(pathname);
+          setIsExplosion(false)
+        }, 3000);
       }
-      router.push(pathname)
-      const description = deleteGoalId ? 'Goal deleted successfully' : 'You archived the goal successfully'
-      toast({ description })
     } catch (error) {
       console.log(error)
     } finally {
@@ -35,8 +41,8 @@ const GoalAlertDialog = () => {
   return (
     <>
       {(deleteGoalId || archiveGoalId) && (
-        <dialog className='dialog-background'>
-          <div className="flex-center mx-6 w-full flex-col gap-6 rounded-[20px] bg-light px-6 py-14">
+        <dialog className="dialog-background">
+          <div className={`flex-center mx-6 w-full flex-col gap-6 rounded-[20px] bg-light px-6 py-14 ${isExplosion && "opacity-0"}`}>
             <span>
               {deleteGoalId ?
                 "Are you sure you want to delete your goal?" :
@@ -66,6 +72,7 @@ const GoalAlertDialog = () => {
               </Button>
             </div>
           </div>
+          {isExplosion && <Confetti width={window.innerWidth} height={window.innerHeight} />}
         </dialog>
       )}
     </>
