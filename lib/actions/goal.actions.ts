@@ -89,6 +89,20 @@ export const getGoals = async (params: GetGoalsParams) => {
   }
 }
 
+export const checkArchiveGoalsExist = async (params: GetGoalsParams) => {
+  try {
+    await connectToDatabase();
+    const { userId } = params;
+    const user = await getMongoUserByClerkId({ userId });
+    if (!user) throw new Error("User not found");
+
+    const goals = await GoalDocument.find({ creator: user._id, status: "ARCHIVED" });
+    return goals.length > 0;
+  } catch (error) {
+    throw handleError(error);
+  }
+}
+
 export const getArchivedGoals = async (params: GetGoalsParams) => {
   try {
     await connectToDatabase();

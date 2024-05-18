@@ -103,3 +103,14 @@ export const playSound = (url: string) => {
   const audio = new Audio(url);
   audio.play();
 };
+
+export const formatGoalDurationTime = (seconds: number): string => {
+  if (seconds < 60) return `${seconds}`
+
+  const minutes = seconds / 60;
+  if (minutes < 60) return `${Math.floor(minutes)} minute${Math.floor(minutes) !== 1 ? 's' : ''}`
+
+  const hours = minutes / 60;
+  const decimalHours = parseFloat(hours.toFixed(1)); // Round to one decimal place
+  return `${decimalHours} hour${decimalHours !== 1 ? 's' : ''}`
+}

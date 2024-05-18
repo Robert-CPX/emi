@@ -7,7 +7,7 @@ export const GoalSchema = z.object({
   title: z.string().min(8).max(120),
   description: z.string().min(8).max(400),
   icing: z.string().optional(),
-  duration: z.number().optional(),
+  duration: z.number(),
   activities: z.array(z.custom<ObjectId>()).optional(),
   isLongTerm: z.boolean(),
   status: z.custom<GoalStatus>(),

@@ -6,6 +6,7 @@ import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import { formatGoalDurationTime } from '@/lib/utils'
 
 interface GoalCardProps {
   type: "todo" | "longterm"
@@ -13,11 +14,12 @@ interface GoalCardProps {
   title: string
   description: string
   icing: string
-  customClassName?: string;
+  duration: number
+  customClassName?: string
 }
 
 const GoalCard = (props: GoalCardProps) => {
-  const { id, type, title, description, icing, customClassName } = props
+  const { id, type, title, description, icing, customClassName, duration = 0 } = props
   const [isSelected, setIsSelected] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
@@ -31,7 +33,7 @@ const GoalCard = (props: GoalCardProps) => {
   }
 
   return (
-    <article className={`flex flex-col gap-1 rounded-[20px] bg-white px-3 py-4 ${customClassName}`}>
+    <article className={`relative flex flex-col gap-1 overflow-hidden rounded-[20px] bg-white px-3 py-4 ${customClassName}`}>
       <div className='flex items-center justify-between'>
         <div className='flex-center text-400-16-20 gap-2'>
           <Button
@@ -58,8 +60,17 @@ const GoalCard = (props: GoalCardProps) => {
           {icing}
         </span>
       )}
+      {(type === 'longterm' && duration > 0) && (
+        <>
+          <div className='goal-card-longterm-decoration absolute inset-x-0 bottom-0 h-[6px]' />
+          <div className='orange-gradient-background absolute bottom-0 right-0 h-[56px] w-[120px] translate-x-2 translate-y-8 skew-x-[-20deg] rounded-[20px] pl-5'>
+            <div className='skew-x-[20deg] text-orange-dark'>
+              <span>{formatGoalDurationTime(duration)}</span>
+            </div>
+          </div>
+        </>
+      )}
     </article >
   )
 }
-
 export default GoalCard

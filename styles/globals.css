@@ -224,7 +224,7 @@ h6 {
     @apply mx-2 my-1 rounded-[28px] border-transparent border text-[1rem] font-[500] leading-[20px] min-w-[100px];
   }
 
-  .goal-sum-up-background {
+  .orange-gradient-background {
     @apply bg-gradient-to-r from-[rgba(255,210,142,0.4)] via-[rgba(255,210,142,0.9)] to-[#F5C885];
     background: linear-gradient(
       207.24deg,
@@ -234,8 +234,12 @@ h6 {
     );
   }
 
+  .goal-card-longterm-decoration {
+    background: linear-gradient(90deg, #ddb975 0%, #f6ca86 100%);
+  }
+
   .goal-card-icing {
-    @apply rounded-lg bg-[hsla(36,69%,86%,0.4)] px-2 py-[6px] text-[hsla(36,100%,24%,1)] line-clamp-2;
+    @apply rounded-lg bg-[hsla(36,69%,86%,0.4)] px-2 py-[6px] text-orange-dark line-clamp-2;
   }
 
   .dialog-background {

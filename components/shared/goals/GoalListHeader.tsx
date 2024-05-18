@@ -12,10 +12,11 @@ const HIDE_LONGTERM_KEY = "hideLongterm"
 interface GoalListHeaderProps {
   type: "todo" | "longterm"
   isHide: boolean
+  disableAddAction?: boolean
 }
 
 const GoalListHeader = (props: GoalListHeaderProps) => {
-  const { type, isHide } = props
+  const { type, isHide, disableAddAction = false } = props
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -38,13 +39,15 @@ const GoalListHeader = (props: GoalListHeaderProps) => {
         {type === "todo" ? "Todo" : "Long term"}
         {isHide ? <ChevronRight /> : <ChevronDown />}
       </Button>
-      <Link href={`?add=${type}`}>
-        <Button
-          className='my-2 rounded-[20px] border border-dark px-4 py-2 text-dark'
-        >
-          Add
-        </Button>
-      </Link>
+      {!disableAddAction && (
+        <Link href={`?add=${type}`}>
+          <Button
+            className='my-2 h-[26px] w-[44px] rounded-[20px] border border-dark text-dark'
+          >
+            Add
+          </Button>
+        </Link>
+      )}
     </div>
   )
 }
