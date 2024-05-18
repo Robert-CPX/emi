@@ -3,10 +3,28 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { AUDIO_RESOURCES } from '@/constants/constants';
 import { Volume2, VolumeX } from "lucide-react"
+import { useEmi } from '@/context/EmiProvider';
 
 const BackgroundMusic: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isMuted, setIsMuted] = useState<boolean>(true);
+  const { mode } = useEmi();
+
+  useEffect(() => {
+    if (!mode) return;
+    audioRef.current?.pause();
+    if (mode === "focus") {
+      const audio = new Audio(AUDIO_RESOURCES.BGM_FOCUS);
+      audio.loop = true;
+      audio.play();
+      audioRef.current = audio;
+    } else if (mode === "companion") {
+      const audio = new Audio(AUDIO_RESOURCES.BGM_DEFAULT);
+      audio.loop = true;
+      audio.play();
+      audioRef.current = audio;
+    }
+  }, [mode]);
 
   useEffect(() => {
     const audio = new Audio(AUDIO_RESOURCES.BGM_DEFAULT);

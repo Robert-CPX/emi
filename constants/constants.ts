@@ -65,6 +65,7 @@ export const EMI_CLICK_AREA: { [area: string]: { animation: string, meshes: stri
 
 export const AUDIO_RESOURCES = {
   BGM_DEFAULT: "assets/audio/BGM.wav",
+  BGM_FOCUS: "assets/audio/BGM_focus.mp3",
   CLICK_SOUND: "assets/audio/bong_001.ogg",
   CLICK_CHARACTER_SOUND: "assets/audio/select_006.ogg",
   MESSAGE_SOUND: "assets/audio/message.ogg",

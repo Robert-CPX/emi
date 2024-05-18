@@ -9,8 +9,10 @@ const RootLayout = ({
 }>) => {
   return (
     <main className="relative h-full">
-      <BackgroundMusic />
-      <EmiProvider>{children}</EmiProvider>
+      <EmiProvider>
+        <BackgroundMusic />
+        {children}
+      </EmiProvider>
       <Toaster />
     </main>
   );
