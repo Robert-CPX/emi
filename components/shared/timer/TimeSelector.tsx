@@ -1,11 +1,12 @@
 'use client'
 
 import { Button } from "@/components/ui/button"
-import { Check, X } from 'lucide-react'
+import { Play, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useEmi } from "@/context/EmiProvider"
 import { useEmiTime } from "@/context/EmiTimeProvider"
 import { generateTimeOptions } from '@/lib/utils'
+import GoalMenu from "../GoalMenu"
 
 // TimeSelector component only show on mobile
 const TimeSelector = () => {
@@ -67,13 +68,16 @@ const TimeSelector = () => {
               </Button>
             ))}
           </div>
-          <Button
-            size="icon"
-            className='size-[40px] rounded-full border border-primary-light bg-dark/50'
-            onClick={handleConfirm}
-          >
-            <Check />
-          </Button>
+          <div className="flex w-full items-center justify-between">
+            <GoalMenu container="timeselector" />
+            <Button
+              size="icon"
+              className='size-[40px] rounded-full border border-primary-light bg-dark/50'
+              onClick={handleConfirm}
+            >
+              <Play />
+            </Button>
+          </div>
         </>
       )}
     </div>

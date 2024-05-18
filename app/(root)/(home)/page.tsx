@@ -1,15 +1,21 @@
+'use client'
 import Emi from "@/components/shared/Emi"
 import ModeTabs from "@/components/shared/ModeTabs"
 import BrandMenu from "@/components/shared/brand-menu"
+import GoalMenu from "@/components/shared/GoalMenu"
 import { Chat, ChatMobileBackground, ChatHistoryMobile } from "@/components/shared/chat"
 import ActionsMenu from "@/components/shared/ActionsMenu"
 import { TimeEditor, TimeSelector } from "@/components/shared/timer"
 import { redirect } from 'next/navigation'
-import { auth } from '@clerk/nextjs'
+import { useAuth } from "@clerk/nextjs"
+import { useEmi } from "@/context/EmiProvider"
 
 const Home = () => {
-  const { userId } = auth()
+  const { userId } = useAuth()
   if (!userId) redirect('/sign-in')
+
+  const { mode } = useEmi()
+
   return (
     <>
       {/* Emi as background */}
@@ -23,6 +29,9 @@ const Home = () => {
         <section className="z-10 flex flex-col items-center justify-start gap-4">
           {/* Mode Tabs disappear only when timer is running */}
           <ModeTabs />
+          {mode === 'companion' && (
+            <GoalMenu container="home" />
+          )}
           {/* Time Editor only show on desktop */}
           <TimeEditor />
           {/* Time Selector only show on mobile */}

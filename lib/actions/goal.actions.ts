@@ -3,9 +3,9 @@ import GoalDocument from '@/database/models/goal.model';
 import ActivityDocument from '@/database/models/activity.model';
 import { connectToDatabase } from '@/database/mongoose';
 import { handleError } from '../utils';
-import { CreateGoalParams, UpdateGoalParams, GetGoalsParams, DeleteGoalParams, ArchiveGoalParams } from './shared';
+import { CreateGoalParams, UpdateGoalParams, GetGoalsParams, DeleteGoalParams, ArchiveGoalParams, GetLatestGoalsParams } from './shared';
 import { getMongoUserByClerkId } from './user.actions';
-import { GoalSchema, AllGoalsSchema } from '../validation';
+import { GoalSchema, AllGoalsSchema, GoalListSchema } from '../validation';
 import { revalidatePath } from "next/cache"
 
 export const createGoal = async (params: CreateGoalParams) => {
@@ -50,7 +50,7 @@ export const updateGoal = async (params: UpdateGoalParams) => {
   }
 }
 
-//TODO: need to confirm filter logic
+// get all unarchived goals
 export const getGoals = async (params: GetGoalsParams) => {
   try {
     await connectToDatabase();
@@ -84,6 +84,24 @@ export const getGoals = async (params: GetGoalsParams) => {
     const todos = parsedGoals.data.find((goal) => !goal.isLongTerm);
     const longTerms = parsedGoals.data.find((goal) => goal.isLongTerm);
     return { todos: todos?.goals ?? [], longTerms: longTerms?.goals ?? [] };
+  } catch (error) {
+    throw handleError(error);
+  }
+}
+
+export const getLatestGoals = async (params: GetLatestGoalsParams) => {
+  try {
+    await connectToDatabase();
+    const { userId, limit } = params;
+    const user = await getMongoUserByClerkId({ userId });
+    if (!user) throw new Error("User not found");
+
+    const goals = await GoalDocument.find({ creator: user._id, status: { $ne: "ARCHIVED" } })
+      .sort({ createdAt: -1 })
+      .limit(limit);
+    const parsedGoals = GoalListSchema.safeParse(goals);
+    if (!parsedGoals.success) throw new Error("Failed to parse goals");
+    return parsedGoals.data;
   } catch (error) {
     throw handleError(error);
   }

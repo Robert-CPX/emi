@@ -90,6 +90,11 @@ export type GetGoalsParams = {
   userId: string;
 }
 
+export type GetLatestGoalsParams = {
+  userId: string;
+  limit: number;
+}
+
 export type DeleteGoalParams = {
   goalId: string;
   path: string;

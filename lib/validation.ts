@@ -16,6 +16,8 @@ export const GoalSchema = z.object({
   creator: z.custom<ObjectId>(),
 });
 
+export const GoalListSchema = z.array(GoalSchema)
+
 export const AllGoalsSchema = z.array(
   z.object({
     isLongTerm: z.boolean(),

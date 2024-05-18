@@ -12,7 +12,6 @@ import { useAuth } from "@clerk/nextjs"
 const Page = () => {
   const router = useRouter()
   const { userId } = useAuth()
-  console.log(userId)
   useEffect(() => {
     if (!userId) return;
     const redirectTimeout = setTimeout(() => {
