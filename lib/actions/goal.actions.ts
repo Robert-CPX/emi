@@ -3,9 +3,9 @@ import GoalDocument from '@/database/models/goal.model';
 import ActivityDocument from '@/database/models/activity.model';
 import { connectToDatabase } from '@/database/mongoose';
 import { handleError } from '../utils';
-import { CreateGoalParams, UpdateGoalParams, GetGoalsParams, DeleteGoalParams } from './shared';
+import { CreateGoalParams, UpdateGoalParams, GetGoalsParams, DeleteGoalParams, ArchiveGoalParams } from './shared';
 import { getMongoUserByClerkId } from './user.actions';
-import { AllGoalsSchema } from '../validation';
+import { GoalSchema, AllGoalsSchema } from '../validation';
 import { revalidatePath } from "next/cache"
 
 export const createGoal = async (params: CreateGoalParams) => {
@@ -24,16 +24,27 @@ export const createGoal = async (params: CreateGoalParams) => {
   }
 }
 
+export const getGoalById = async (goalId: string) => {
+  try {
+    await connectToDatabase();
+    const goal = await GoalDocument.findById(goalId);
+    const parsedGoal = GoalSchema.safeParse(goal);
+    if (!parsedGoal.success) throw new Error("Failed to parse goal");
+    return parsedGoal.data;
+  } catch (error) {
+    throw handleError(error);
+  }
+}
+
 export const updateGoal = async (params: UpdateGoalParams) => {
   try {
     await connectToDatabase();
-    const { goalId, updateData } = params;
-    const updatedGoal = await GoalDocument.findByIdAndUpdate(
+    const { goalId, updateData, path } = params;
+    await GoalDocument.findByIdAndUpdate(
       goalId,
-      updateData,
-      { new: true }
+      updateData
     )
-    return updatedGoal;
+    revalidatePath(path);
   } catch (error) {
     handleError(error);
   }
@@ -49,7 +60,7 @@ export const getGoals = async (params: GetGoalsParams) => {
 
     const goals = await GoalDocument.aggregate([
       {
-        $match: { creator: user._id }
+        $match: { creator: user._id, status: { $ne: "ARCHIVED" } }
       },
       {
         $sort: { createdAt: -1 }
@@ -120,10 +131,25 @@ export const getArchivedGoals = async (params: GetGoalsParams) => {
 export const deleteGoal = async (params: DeleteGoalParams) => {
   try {
     await connectToDatabase();
-    const { goalId } = params;
+    const { goalId, path } = params;
     const deletedGoal = await GoalDocument.findOneAndDelete({ _id: goalId });
     await ActivityDocument.deleteMany({ goal: deletedGoal._id });
+    revalidatePath(path);
   } catch (error) {
-    handleError(error);
+    throw handleError(error);
+  }
+}
+
+export const archiveGoal = async (params: ArchiveGoalParams) => {
+  try {
+    await connectToDatabase();
+    const { goalId, path } = params;
+    await GoalDocument.findByIdAndUpdate(
+      goalId,
+      { status: "ARCHIVED" }
+    )
+    revalidatePath(path);
+  } catch (error) {
+    throw handleError(error);
   }
 }

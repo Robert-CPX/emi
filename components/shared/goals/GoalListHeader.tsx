@@ -38,7 +38,7 @@ const GoalListHeader = (props: GoalListHeaderProps) => {
         {type === "todo" ? "Todo" : "Long term"}
         {isHide ? <ChevronRight /> : <ChevronDown />}
       </Button>
-      <Link href={`?addNewGoal=${type}`}>
+      <Link href={`?add=${type}`}>
         <Button
           className='my-2 rounded-[20px] border border-dark px-4 py-2 text-dark'
         >

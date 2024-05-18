@@ -1,5 +1,5 @@
 import MobileNavigationBar from "@/components/shared/MobileNavigationBar"
-import { GoalCard, GoalSumup, GoalListHeader, GoalForm } from "@/components/shared/goals"
+import { GoalCard, GoalSumup, GoalListHeader, GoalForm, GoalAlertDialog } from "@/components/shared/goals"
 import { auth } from '@clerk/nextjs'
 import { redirect } from 'next/navigation'
 import { getGoals, getArchivedGoals } from "@/lib/actions/goal.actions"
@@ -32,6 +32,7 @@ const Page = async ({
           todos.map((goal) => (
             <GoalCard
               key={goal._id}
+              id={goal._id}
               type="todo"
               title={goal.title}
               description={goal.description}
@@ -50,6 +51,7 @@ const Page = async ({
           longTerms.map((goal) => (
             <GoalCard
               key={goal._id}
+              id={goal._id}
               type="longterm"
               title={goal.title}
               description={goal.description}
@@ -66,6 +68,7 @@ const Page = async ({
         </section>
       )}
       <GoalForm clerkId={userId} />
+      <GoalAlertDialog />
     </div>
   )
 }

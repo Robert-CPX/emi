@@ -1,12 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import React from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 
 interface GoalCardProps {
   type: "todo" | "longterm"
+  id: string;
   title: string
   description: string
   icing: string
@@ -14,20 +17,17 @@ interface GoalCardProps {
 }
 
 const GoalCard = (props: GoalCardProps) => {
-  const { type, title, description, icing, customClassName } = props
+  const { id, type, title, description, icing, customClassName } = props
   const [isSelected, setIsSelected] = useState(false)
+  const pathname = usePathname()
+  const router = useRouter()
 
   const handleSelected = () => {
-    const newState = !isSelected
-    setIsSelected(newState)
-  }
-
-  const handleEdit = () => {
-    console.log("handle edited")
-  }
-
-  const handleDelete = () => {
-    console.log("handle deleted")
+    const userIsSelected = !isSelected
+    setIsSelected(userIsSelected)
+    if (userIsSelected) {
+      router.push(`${pathname}?archive=${id}`)
+    }
   }
 
   return (
@@ -41,13 +41,13 @@ const GoalCard = (props: GoalCardProps) => {
           </Button>
           {title}
         </div>
-        <div className='flex-center'>
-          <Button onClick={handleEdit} size="icon">
+        <div className='flex-center gap-2'>
+          <Link href={`?edit=${id}`}>
             <Image src="/assets/icons/goal-edit.svg" alt="edit" width={28} height={28} />
-          </Button>
-          <Button onClick={handleDelete} size="icon">
+          </Link>
+          <Link href={`?delete=${id}`}>
             <Image src="/assets/icons/goal-delete.svg" alt="delete" width={28} height={28} />
-          </Button>
+          </Link>
         </div>
       </div>
       <span className='text-400-12-15 mb-[10px]'>

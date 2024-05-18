@@ -83,6 +83,7 @@ export type CreateGoalParams = {
 export type UpdateGoalParams = {
   goalId: string;
   updateData: Partial<Goal>;
+  path: string; // For page revalidate purposes
 }
 
 export type GetGoalsParams = {
@@ -91,4 +92,10 @@ export type GetGoalsParams = {
 
 export type DeleteGoalParams = {
   goalId: string;
+  path: string;
+}
+
+export type ArchiveGoalParams = {
+  goalId: string;
+  path: string;
 }

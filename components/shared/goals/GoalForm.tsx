@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Textarea } from "@/components/ui/textarea"
@@ -17,10 +17,10 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { EditGoalSchema } from '@/lib/validation'
-import { createGoal } from '@/lib/actions/goal.actions'
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
 import Link from "next/link";
+import { createGoal, getGoalById, updateGoal } from '@/lib/actions/goal.actions';
 
 type GoalFormProps = {
   clerkId: string;
@@ -31,33 +31,59 @@ const GoalForm = ({
 }: GoalFormProps) => {
 
   const searchParams = useSearchParams();
-  const newGoal = searchParams.get("addNewGoal");
+  const addGoal = searchParams.get("add");
+  const editGoal = searchParams.get("edit");
   const pathname = usePathname()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
 
   const form = useForm<z.infer<typeof EditGoalSchema>>({
-    resolver: zodResolver(EditGoalSchema)
+    resolver: zodResolver(EditGoalSchema),
+    defaultValues: {
+      title: '',
+      description: ''
+    }
   })
+
+  useEffect(() => {
+    form.setValue('title', "")
+    form.setValue('description', "")
+    if (editGoal) {
+      const fetchGoal = async () => {
+        const goal = await getGoalById(editGoal)
+        form.setValue('title', goal.title)
+        form.setValue('description', goal.description)
+      }
+      fetchGoal()
+    }
+  }, [editGoal, form])
 
   const onSubmit = async (values: z.infer<typeof EditGoalSchema>) => {
     setIsSubmitting(true)
-    const isLongTerm = newGoal === 'longterm'
+    const isLongTerm = addGoal === 'longterm'
     try {
-      await createGoal({ title: values.title, description: values.description, duration: 0, userId: clerkId, path: pathname, isLongTerm })
+      if (editGoal) {
+        await updateGoal({ goalId: editGoal, updateData: { title: values.title, description: values.description }, path: pathname })
+      } else {
+        await createGoal({ title: values.title, description: values.description, duration: 0, userId: clerkId, path: pathname, isLongTerm })
+      }
       router.push(pathname)
-      toast({ description: 'A new goal added successfully' })
+      const description = editGoal ? 'Goal updated successfully' : 'A new goal added successfully'
+      toast({ description })
     } catch (error) {
       console.log(error)
     } finally {
       setIsSubmitting(false)
     }
+
   }
 
   return (
     <>
-      {(newGoal === 'todo' || newGoal === 'longterm') &&
-        <dialog className='fixed left-0 top-0 z-50 flex size-full items-center justify-center overflow-auto bg-dark/50'>
+      {(addGoal === 'todo' ||
+        addGoal === 'longterm' ||
+        editGoal) &&
+        <dialog className='dialog-background'>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="mx-6 flex w-full flex-col gap-4 rounded-[20px] bg-light px-4 py-5">
               <FormField
@@ -95,11 +121,11 @@ const GoalForm = ({
                 <Button type="submit" className='h-[40px] w-[148px] rounded-[20px] bg-primary text-dark' disabled={isSubmitting}>
                   {isSubmitting ? (
                     <>
-                      {'Adding...'}
+                      {editGoal ? 'Updating...' : 'Adding...'}
                     </>
                   ) : (
                     <>
-                      {'Add'}
+                      {editGoal ? 'Update' : 'Add'}
                     </>
                   )}
                 </Button>

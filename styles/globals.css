@@ -237,4 +237,8 @@ h6 {
   .goal-card-icing {
     @apply rounded-lg bg-[hsla(36,69%,86%,0.4)] px-2 py-[6px] text-[hsla(36,100%,24%,1)] line-clamp-2;
   }
+
+  .dialog-background {
+    @apply fixed left-0 top-0 z-50 flex size-full items-center justify-center overflow-auto bg-dark/50;
+  }
 }
