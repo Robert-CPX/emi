@@ -23,8 +23,25 @@ export const createActivity = async (params: CreateActivityParams) => {
       status: GoalStatus.InProgress
     })
 
-    return newActivity;
+    return newActivity._id;
   } catch (error) {
-    handleError(error);
+    throw handleError(error);
+  }
+}
+
+// cancel an activity, also remove it from the related goal
+export const cancelActivity = async (activityId: string) => {
+  try {
+    await connectToDatabase();
+    const activity = await ActivityDocument.findByIdAndDelete(activityId);
+    if (!activity) throw new Error("Activity not found");
+    // Find and update the goal
+    await GoalDocument.findByIdAndUpdate(activity.goalId, {
+      $pull: { activities: activityId },
+      updatedAt: new Date(),
+      status: GoalStatus.InProgress
+    })
+  } catch (error) {
+    throw handleError(error);
   }
 }

@@ -5,16 +5,28 @@ import { ChevronUp, ChevronDown } from "lucide-react"
 import { useEffect, useState } from "react"
 import { getLatestGoals } from "@/lib/actions/goal.actions"
 import { useAuth } from "@clerk/nextjs"
+import { Goal } from "@/constants"
+import { USER_SELECTED_GOAL_ID } from "@/constants/constants"
 
 interface GoalMenuProps {
   container?: string
 }
+
 const GoalMenu = (props: GoalMenuProps) => {
   const { container } = props
   const [isOpen, setIsOpen] = useState(false)
   const { userId } = useAuth()
-  const [goals, setGoals] = useState<{ _id: string, title: string, description: string }[]>([])
-  const [selectedGoal, setSelectedGoal] = useState("Goal")
+  const [goals, setGoals] = useState<Goal[]>([])
+  const [selectedGoal, setSelectedGoal] = useState<Goal | null>()
+
+  const handleSelectAction = (goal: Goal | null) => {
+    setSelectedGoal(goal)
+    if (!goal) {
+      sessionStorage.removeItem(USER_SELECTED_GOAL_ID)
+      return
+    }
+    sessionStorage.setItem(USER_SELECTED_GOAL_ID, goal._id);
+  }
 
   useEffect(() => {
     if (!userId) return;
@@ -34,7 +46,7 @@ const GoalMenu = (props: GoalMenuProps) => {
       >
         <DropdownMenuTrigger asChild>
           <Button className="text-600-14-17 no-focus h-[48px] w-fit gap-2">
-            {selectedGoal}
+            {selectedGoal?.title || "Goal"}
             {isOpen ? <ChevronDown /> : <ChevronUp />}
           </Button>
         </DropdownMenuTrigger>
@@ -43,7 +55,7 @@ const GoalMenu = (props: GoalMenuProps) => {
             <>
               <DropdownMenuItem
                 className="h-[42px] w-full"
-                onClick={() => setSelectedGoal("Goal")}
+                onClick={() => handleSelectAction(null)}
               >
                 <div className="text-400-14-17">None</div>
               </DropdownMenuItem>
@@ -55,7 +67,7 @@ const GoalMenu = (props: GoalMenuProps) => {
                 <DropdownMenuItem
                   key={index}
                   className="h-[42px] w-full"
-                  onClick={() => setSelectedGoal(goal.title)}
+                  onClick={() => handleSelectAction(goal)}
                 >
                   <div className="text-400-14-17">{goal.title}</div>
                 </DropdownMenuItem>

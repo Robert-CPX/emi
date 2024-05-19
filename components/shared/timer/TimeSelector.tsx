@@ -7,9 +7,13 @@ import { useEmi } from "@/context/EmiProvider"
 import { useEmiTime } from "@/context/EmiTimeProvider"
 import { generateTimeOptions } from '@/lib/utils'
 import GoalMenu from "../GoalMenu"
+import { createActivity, cancelActivity } from "@/lib/actions/activity.actions"
+import { useAuth } from "@clerk/nextjs"
+import { USER_SELECTED_GOAL_ID, USER_ACTIVITY_ID } from "@/constants/constants"
 
 // TimeSelector component only show on mobile
 const TimeSelector = () => {
+  const { userId } = useAuth()
   // use choose the time, unit second
   const [time, setTime] = useState(0)
   // display the remaining time
@@ -21,12 +25,20 @@ const TimeSelector = () => {
 
   // store the remaining time on context
   const { time: countdown, setTime: setCountdown } = useEmiTime()
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setCountdown(time);
+    const goalId = sessionStorage.getItem(USER_SELECTED_GOAL_ID)
+    if (!goalId || !userId) return;
+    const activityId = await createActivity({ type: 'goal', value: time, userId, goalId })
+    sessionStorage.setItem(USER_ACTIVITY_ID, activityId)
   }
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
     setCountdown(0);
+    const activityId = sessionStorage.getItem(USER_ACTIVITY_ID)
+    if (!activityId) return;
+    await cancelActivity(activityId)
+    sessionStorage.removeItem(USER_ACTIVITY_ID)
   }
 
   useEffect(() => {
