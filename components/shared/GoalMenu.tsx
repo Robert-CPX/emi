@@ -31,7 +31,7 @@ const GoalMenu = (props: GoalMenuProps) => {
   useEffect(() => {
     if (!userId) return;
     const fetchGoals = async () => {
-      const latestGoals = await getLatestGoals({ userId, limit: 4 })
+      const latestGoals = await getLatestGoals({ userId, limit: 3 })
       setGoals(latestGoals)
     }
     fetchGoals()
