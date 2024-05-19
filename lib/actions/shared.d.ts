@@ -73,7 +73,6 @@ export type CreateActivityParams = {
 export type CreateGoalParams = {
   title: string;
   description: string;
-  icing?: string;
   duration: number;
   userId: string;
   isLongTerm: boolean;

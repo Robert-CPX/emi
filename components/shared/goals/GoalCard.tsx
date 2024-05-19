@@ -56,7 +56,7 @@ const GoalCard = (props: GoalCardProps) => {
         {description}
       </span>
       {icing && (
-        <span className='goal-card-icing text-400-12-15'>
+        <span className={`goal-card-icing text-400-12-15 ${type === 'longterm' ? "bg-purple-light text-purple-dark" : "bg-orange-light text-orange-dark"}`}>
           {icing}
         </span>
       )}

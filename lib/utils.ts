@@ -114,3 +114,13 @@ export const formatGoalDurationTime = (seconds: number): string => {
   const decimalHours = parseFloat(hours.toFixed(1)); // Round to one decimal place
   return `${decimalHours} hour${decimalHours !== 1 ? 's' : ''}`
 }
+
+export const generatePromptWhileCreatingAGoal = (
+  title: string,
+  description: string,
+  isLongTerm: boolean
+): string => {
+  const p1 = `Hey, I'm setting a new goal for myself. I want to ${title}, to be more specific, ${description}. ${isLongTerm && "This is a long-term goal"}. It would mean a lot if you could give me some encouraging words to help me push through.`
+  const p2 = 'Please go directly, no Hello or greeting. Just start with the encouraging words. Thank you!'
+  return p1 + p2;
+}

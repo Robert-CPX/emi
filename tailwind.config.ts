@@ -29,6 +29,7 @@ const config = {
           dark: "hsla(231, 55%, 35%, 1)",
         },
         orange: {
+          light: 'hsla(36, 69%, 86%, 0.4)',
           dark: "hsla(36,100%,24%,1)",
         },
         gray: {

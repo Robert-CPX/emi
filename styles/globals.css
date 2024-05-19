@@ -239,7 +239,7 @@ h6 {
   }
 
   .goal-card-icing {
-    @apply rounded-lg bg-[hsla(36,69%,86%,0.4)] px-2 py-[6px] text-orange-dark line-clamp-2;
+    @apply rounded-lg px-2 py-[6px] line-clamp-3;
   }
 
   .dialog-background {
