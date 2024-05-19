@@ -1,4 +1,5 @@
-import { authMiddleware } from "@clerk/nextjs";
+import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
+import { NextResponse } from "next/server";
 
 export const config = {
   matcher: [
@@ -9,12 +10,16 @@ export const config = {
 
 // Clerk auth middleware
 export default authMiddleware({
-  publicRoutes: [
-    '/',
-    '/welcome',
-  ],
-  ignoredRoutes: [
-    '/api/webhooks',
-    '/api/modal/tts',
-  ],
+  apiRoutes: ['/(api|trpc)(.*)'], // Per `matcher` - `publicRoutes` override this
+  publicRoutes: ['/sign-in', '/sign-up', '/welcome'],
+  afterAuth(auth, req, evt) {
+    // handle users who aren't authenticated
+    if (!auth.userId && !auth.isPublicRoute) {
+      return redirectToSignIn({ returnBackUrl: req.url });
+    }
+    if (auth.userId && !auth.isPublicRoute) {
+      return NextResponse.next();
+    }
+    return NextResponse.next();
+  },
 });
