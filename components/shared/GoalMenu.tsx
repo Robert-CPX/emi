@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { ChevronUp, ChevronDown } from "lucide-react"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { getLatestGoals } from "@/lib/actions/goal.actions"
 import { useAuth } from "@clerk/nextjs"
 import { Goal } from "@/constants"
@@ -63,16 +63,15 @@ const GoalMenu = (props: GoalMenuProps) => {
             </>
 
             {goals.map((goal, index) => (
-              <>
+              <React.Fragment key={goal._id}>
                 <DropdownMenuItem
-                  key={index}
                   className="h-[42px] w-full"
                   onClick={() => handleSelectAction(goal)}
                 >
                   <div className="text-400-14-17">{goal.title}</div>
                 </DropdownMenuItem>
                 {index < goals.length - 1 && <DropdownMenuSeparator className="separator" />}
-              </>
+              </React.Fragment>
             ))}
           </DropdownMenuGroup>
         </DropdownMenuContent>
