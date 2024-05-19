@@ -1,14 +1,16 @@
-import { NextResponse } from "next/server"
-import { haveConversation } from "@/lib/actions/interaction.actions";
+'use server'
 
-export async function POST(req: Request) {
+import { SimpleConversationParams } from './shared';
+import { haveConversation } from './interaction.actions';
+import { handleError } from '../utils';
+
+export const simpleConversation = async (params: SimpleConversationParams) => {
   const my_key = "Basic " + process.env.INWORLD_BASE64_KEY
   const character = "workspaces/default-upyjqviok36wsxukslekpq/characters/emi2"
   const url = `https://api.inworld.ai/v1/${character}:simpleSendText`
 
-  const { text, endUserFullname, endUserId, conversationId } = await req.json()
-  if (!text) return NextResponse.error()
-
+  const { text, endUserFullname, endUserId, conversationId } = params
+  if (!text) throw new Error("Text is required")
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -28,9 +30,8 @@ export async function POST(req: Request) {
     const reply = textList.join('. ')
     // save user input to db
     await haveConversation({ content: text, userId: endUserId })
-    return NextResponse.json({ reply, emotion, sessionId, relationshipUpdate })
+    return { reply, emotion, sessionId, relationshipUpdate }
   } catch (error) {
-    return NextResponse.error()
+    throw handleError(error)
   }
-
 }

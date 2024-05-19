@@ -104,3 +104,10 @@ export type ArchiveGoalParams = {
   goalId: string;
   path: string;
 }
+
+export type SimpleConversationParams = {
+  text: string;
+  endUserFullname: string;
+  endUserId: string;
+  conversationId?: string;
+}
