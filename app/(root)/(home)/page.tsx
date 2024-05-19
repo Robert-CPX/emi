@@ -9,12 +9,19 @@ import { TimeEditor, TimeSelector } from "@/components/shared/timer"
 import { redirect } from 'next/navigation'
 import { useAuth } from "@clerk/nextjs"
 import { useEmi } from "@/context/EmiProvider"
+import { useEffect } from "react"
 
 const Home = () => {
   const { userId } = useAuth()
   if (!userId) redirect('/sign-in')
 
   const { mode } = useEmi()
+
+  useEffect(() => {
+    if (mode === 'cheer') {
+      redirect("/cheer")
+    }
+  }, [mode])
 
   return (
     <>

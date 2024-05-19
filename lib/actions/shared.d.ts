@@ -70,6 +70,10 @@ export type CreateActivityParams = {
   goalId: string;
 }
 
+export type UpdateActivityParams = {
+  activityId: string;
+}
+
 export type CreateGoalParams = {
   title: string;
   description: string;
@@ -101,7 +105,7 @@ export type DeleteGoalParams = {
 
 export type ArchiveGoalParams = {
   goalId: string;
-  path: string;
+  path?: string;
 }
 
 export type SimpleConversationParams = {

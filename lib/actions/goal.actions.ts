@@ -186,7 +186,9 @@ export const archiveGoal = async (params: ArchiveGoalParams) => {
       goalId,
       { status: "ARCHIVED" }
     )
-    revalidatePath(path);
+    if (path) {
+      revalidatePath(path);
+    }
   } catch (error) {
     throw handleError(error);
   }
