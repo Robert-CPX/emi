@@ -21,7 +21,7 @@ const Page = async ({
 
   return (
     <div className='mx-6 mt-4 flex flex-col gap-4'>
-      <MobileNavigationBar title="Archived Goals" allowBack rootPath="/goals" />
+      <MobileNavigationBar title="Archived Goals" allowBack />
       <section>
         <GoalListHeader
           type="todo"
