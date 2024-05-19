@@ -26,26 +26,23 @@ const EmiTimeProvider = ({
   const { userId } = useAuth()
 
   useEffect(() => {
-    // we want to keep timer alive after refreshing the page
     if (!isRunning) {
+      // resume the timer after refreshing the page if it's not finished
       const storedTime = parseInt(sessionStorage.getItem(COUNTDOWN_REMAINING_SECONDS) || "0")
       if (storedTime > 0) {
         setTime(storedTime)
       } else {
         sessionStorage.removeItem(COUNTDOWN_ID)
         sessionStorage.removeItem(COUNTDOWN_REMAINING_SECONDS)
-        // auto switch to companion mode when countdown end
-        setMode('companion')
       }
       return
     }
 
     const interval = setInterval(() => {
       setTime((prevTime) => {
-        if (prevTime === 0) {
-          setIsRunning(false)
+        if (prevTime <= 1) {
+          setMode('cheer')
           clearInterval(interval)
-          return 0
         }
         return prevTime - 1
       })
@@ -60,20 +57,9 @@ const EmiTimeProvider = ({
   }, [isRunning])
 
   useEffect(() => {
-    if (time === 0) {
-      setIsRunning(false)
-      sessionStorage.setItem(COUNTDOWN_REMAINING_SECONDS, "0")
-    } else {
-
-      // only the first time user set a timer, save user interaction to db
-      if (!isRunning) {
-        saveUserInteraction(time)
-      }
-
-      setIsRunning(true)
-      sessionStorage.setItem(COUNTDOWN_REMAINING_SECONDS, time.toString())
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setIsRunning(time > 0)
+    // save time in sessionStorage, so that the timer can be resumed after refreshing the page
+    sessionStorage.setItem(COUNTDOWN_REMAINING_SECONDS, time.toString())
   }, [time])
 
   // save user interaction to db

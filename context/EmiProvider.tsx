@@ -3,7 +3,7 @@
 import { EmotionEvent } from "@inworld/web-core"
 import React, { useState, createContext, useContext } from "react"
 
-export type ModeType = "companion" | "focus" | "dredge-up"
+export type ModeType = "companion" | "focus" | "dredge-up" | "cheer"
 
 type EmiContextType = {
   mode: ModeType
