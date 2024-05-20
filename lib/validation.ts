@@ -4,8 +4,8 @@ import { ObjectId } from 'mongoose'
 
 export const GoalSchema = z.object({
   _id: z.coerce.string(),
-  title: z.string().min(8).max(120),
-  description: z.string().min(8).max(400),
+  title: z.string().min(1, { message: "Title must be at least 1 character long" }),
+  description: z.string().min(1, { message: "Description must be at least 1 character long" }),
   icing: z.string().optional(),
   duration: z.number(),
   activities: z.array(z.custom<ObjectId>()).optional(),
@@ -26,6 +26,6 @@ export const AllGoalsSchema = z.array(
 )
 
 export const EditGoalSchema = z.object({
-  title: z.string().min(8).max(120),
-  description: z.string().min(8).max(400),
+  title: z.string().min(1, { message: "Title must be at least 1 character long" }),
+  description: z.string().min(1, { message: "Description must be at least 1 character long" }),
 })
