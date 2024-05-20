@@ -7,8 +7,7 @@ import { useEmi } from '@/context/EmiProvider';
 
 const BackgroundMusic: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
-  const { mode } = useEmi();
+  const { mode, isBGMMuted, setIsBGMMuted } = useEmi();
 
   useEffect(() => {
     if (!mode) return;
@@ -20,13 +19,12 @@ const BackgroundMusic: React.FC = () => {
     let audio;
     if (mode === "focus") {
       audio = new Audio(AUDIO_RESOURCES.BGM_FOCUS);
-    } else if (mode === "companion") {
+    } else if (mode === "companion" || mode === "dredge-up") {
       audio = new Audio(AUDIO_RESOURCES.BGM_DEFAULT);
     }
-    
 
     if (audio) {
-      audio.volume = isMuted ? 0.0 : 1.0;
+      audio.volume = isBGMMuted ? 0.0 : 1.0;
       audio.loop = true;
       audio.play();
       audioRef.current = audio;
@@ -38,22 +36,14 @@ const BackgroundMusic: React.FC = () => {
         audioRef.current = null;
       }
     };
-  }, [mode, isMuted]);
-
-  const toggleMute = () => {
-    if (audioRef.current) {
-      const newMuteStatus = !isMuted;
-      setIsMuted(newMuteStatus);
-      audioRef.current.volume = newMuteStatus ? 0.0 : 1.0;
-    }
-  };
+  }, [mode, isBGMMuted]);
 
   return (
-    <div className="fixed bottom-36 left-4 z-50 md:bottom-4 ">
+    <div className="hidden sm:fixed sm:bottom-36 sm:left-4 sm:z-50  md:bottom-4 md:block">
       <button 
-        onClick={toggleMute}
+        onClick={() => setIsBGMMuted(!isBGMMuted)}
         className="rounded-full bg-gray-900/30 p-3 text-gray-200 shadow-lg hover:bg-gray-600 focus:outline-none">
-        {isMuted ? <VolumeX /> : <Volume2 />}
+        {isBGMMuted ? <VolumeX /> : <Volume2 />}
       </button>
     </div>
   );
