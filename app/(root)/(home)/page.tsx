@@ -19,6 +19,7 @@ const Home = () => {
 
   const { mode } = useEmi()
 
+  // TODO: redirect here is bad, need to refactor, global mode also need to be refactored
   useEffect(() => {
     checkUnarchivedGoalExist({ userId }).then((exist) => setUnarchivedGoalExist(exist))
     if (mode === 'cheer') {

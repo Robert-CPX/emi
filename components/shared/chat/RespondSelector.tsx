@@ -6,11 +6,14 @@ import { archiveGoal } from '@/lib/actions/goal.actions'
 import { USER_SELECTED_GOAL_ID, USER_ACTIVITY_ID } from "@/constants/constants"
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from "react"
+import { useEmi } from "@/context/EmiProvider"
 
 const RespondSelector = () => {
   const searchParams = useSearchParams()
   const status = searchParams.get('status')
   const router = useRouter()
+  const { setMode } = useEmi()
+
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString())
 
@@ -49,6 +52,12 @@ const RespondSelector = () => {
       processNo()
     }
   }, [router, searchParams, status])
+
+  // TODO: Status Management Disaster
+  useEffect(() => {
+    setMode('companion')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <section className="flex-center gap-4">
