@@ -48,7 +48,7 @@ const GoalForm = ({
   useEffect(() => {
     if (editGoal) {
       const fetchGoal = async () => {
-        const goal = await getGoalById(editGoal)
+        const { goal } = await getGoalById(editGoal)
         form.setValue('title', goal.title)
         form.setValue('description', goal.description)
       }

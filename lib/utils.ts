@@ -106,7 +106,7 @@ export const playSound = (url: string) => {
 };
 
 export const formatGoalDurationTime = (seconds: number): string => {
-  if (seconds < 60) return `${seconds}`
+  if (seconds < 60) return `${seconds} seconds`
 
   const minutes = seconds / 60;
   if (minutes < 60) return `${Math.floor(minutes)} minute${Math.floor(minutes) !== 1 ? 's' : ''}`

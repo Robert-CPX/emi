@@ -1,8 +1,9 @@
 'use client'
 
 import Link from "next/link"
+import { completeActivity } from "@/lib/actions/activity.actions"
 import { archiveGoal } from '@/lib/actions/goal.actions'
-import { USER_SELECTED_GOAL_ID } from "@/constants/constants"
+import { USER_SELECTED_GOAL_ID, USER_ACTIVITY_ID } from "@/constants/constants"
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from "react"
 
@@ -15,19 +16,27 @@ const RespondSelector = () => {
 
     const processYes = async () => {
       const goalId = sessionStorage.getItem(USER_SELECTED_GOAL_ID)
-      if (!goalId) {
+      const activityId = sessionStorage.getItem(USER_ACTIVITY_ID)
+      if (!goalId || !activityId) {
         return router.push(`/`)
       }
+      await completeActivity({ activityId })
       await archiveGoal({ goalId })
       sessionStorage.removeItem(USER_SELECTED_GOAL_ID)
+      sessionStorage.removeItem(USER_ACTIVITY_ID)
       params.set('goalId', goalId)
       setTimeout(() => {
         router.push(`/cheer/congrats?${params}`)
       }, 3000);
     }
 
-    const processNo = () => {
+    const processNo = async () => {
       const goalId = sessionStorage.getItem(USER_SELECTED_GOAL_ID)
+      const activityId = sessionStorage.getItem(USER_ACTIVITY_ID)
+      if (activityId) {
+        await completeActivity({ activityId })
+        sessionStorage.removeItem(USER_ACTIVITY_ID)
+      }
       params.set('goalId', goalId ?? "")
       setTimeout(() => {
         router.push(`/cheer/congrats?${params}`)
