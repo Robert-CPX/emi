@@ -11,8 +11,13 @@ import { createActivity, cancelActivity } from "@/lib/actions/activity.actions"
 import { useAuth } from "@clerk/nextjs"
 import { USER_SELECTED_GOAL_ID, USER_ACTIVITY_ID } from "@/constants/constants"
 
+interface TimeSelectorProps {
+  unarchivedGoalExist: boolean
+}
+
 // TimeSelector component only show on mobile
-const TimeSelector = () => {
+const TimeSelector = (props: TimeSelectorProps) => {
+  const { unarchivedGoalExist } = props
   const { userId } = useAuth()
   // use choose the time, unit second
   const [time, setTime] = useState(0)
@@ -37,7 +42,7 @@ const TimeSelector = () => {
     setCountdown(0);
     const activityId = sessionStorage.getItem(USER_ACTIVITY_ID)
     if (!activityId) return;
-    await cancelActivity(activityId)
+    await cancelActivity({ activityId })
     sessionStorage.removeItem(USER_ACTIVITY_ID)
   }
 
@@ -49,7 +54,7 @@ const TimeSelector = () => {
   useEffect(() => {
     if (mode !== 'focus') return;
     setTime(1500);
-  }, [mode])
+  }, [mode, userId])
 
   return (
     <div className={`flex w-full flex-col items-center gap-3 text-primary-light md:hidden ${mode === 'companion' && "hidden"} ${mode === 'dredge-up' && "hidden"}`}>
@@ -81,7 +86,7 @@ const TimeSelector = () => {
             ))}
           </div>
           <div className="flex w-full items-center justify-between">
-            <GoalMenu container="timeselector" />
+            {unarchivedGoalExist ? <GoalMenu container="timeselector" /> : <div />}
             <Button
               size="icon"
               className='size-[40px] rounded-full border border-primary-light bg-dark/50'

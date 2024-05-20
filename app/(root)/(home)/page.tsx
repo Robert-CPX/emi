@@ -9,19 +9,22 @@ import { TimeEditor, TimeSelector } from "@/components/shared/timer"
 import { redirect } from 'next/navigation'
 import { useAuth } from "@clerk/nextjs"
 import { useEmi } from "@/context/EmiProvider"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import { checkUnarchivedGoalExist } from "@/lib/actions/goal.actions"
 
 const Home = () => {
   const { userId } = useAuth()
   if (!userId) redirect('/sign-in')
+  const [unarchivedGoalExist, setUnarchivedGoalExist] = useState(false)
 
   const { mode } = useEmi()
 
   useEffect(() => {
+    checkUnarchivedGoalExist({ userId }).then((exist) => setUnarchivedGoalExist(exist))
     if (mode === 'cheer') {
       redirect("/cheer")
     }
-  }, [mode])
+  }, [mode, userId])
 
   return (
     <>
@@ -36,13 +39,13 @@ const Home = () => {
         <section className="z-10 flex flex-col items-center justify-start gap-4">
           {/* Mode Tabs disappear only when timer is running */}
           <ModeTabs />
-          {mode === 'companion' && (
+          {(mode === 'companion' && unarchivedGoalExist) && (
             <GoalMenu container="home" />
           )}
           {/* Time Editor only show on desktop */}
           <TimeEditor />
           {/* Time Selector only show on mobile */}
-          <TimeSelector />
+          <TimeSelector unarchivedGoalExist={unarchivedGoalExist} />
         </section>
         {/* ActionsMenu is for non-desktop only */}
         <section className="mb-auto mt-4 self-end md:hidden">
