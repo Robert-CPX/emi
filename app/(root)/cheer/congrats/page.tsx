@@ -46,7 +46,7 @@ const Page = async ({
           />
         </div>
         <Link
-          href={status === "done" ? "congrats/awards" : "/"}
+          href={status === "done" ? "/cheer/congrats/awards" : "/"}
           className='flex-center mx-6 mb-8 mt-auto h-[52px] rounded-[20px] bg-primary-dark'>{status === "done" ? "Yay!" : "Done"}
         </Link>
       </div>
