@@ -12,33 +12,33 @@ const BackgroundMusic: React.FC = () => {
 
   useEffect(() => {
     if (!mode) return;
-    audioRef.current?.pause();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+
+    let audio;
     if (mode === "focus") {
-      const audio = new Audio(AUDIO_RESOURCES.BGM_FOCUS);
-      audio.loop = true;
-      audio.play();
-      audioRef.current = audio;
+      audio = new Audio(AUDIO_RESOURCES.BGM_FOCUS);
     } else if (mode === "companion") {
-      const audio = new Audio(AUDIO_RESOURCES.BGM_DEFAULT);
+      audio = new Audio(AUDIO_RESOURCES.BGM_DEFAULT);
+    }
+    
+
+    if (audio) {
+      audio.volume = isMuted ? 0.0 : 1.0;
       audio.loop = true;
       audio.play();
       audioRef.current = audio;
     }
-  }, [mode]);
-
-  useEffect(() => {
-    const audio = new Audio(AUDIO_RESOURCES.BGM_DEFAULT);
-    audio.loop = true;
-    audio.volume = isMuted ? 0.0 : 1.0;
-    audio.play();
-
-    audioRef.current = audio;
-
     return () => {
-      audio.pause();
-      audio.currentTime = 0; // Reset audio to the beginning
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current = null;
+      }
     };
-  }, [isMuted]);
+  }, [mode, isMuted]);
 
   const toggleMute = () => {
     if (audioRef.current) {
