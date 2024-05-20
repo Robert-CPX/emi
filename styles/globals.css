@@ -245,4 +245,27 @@ h6 {
   .dialog-background {
     @apply fixed left-0 top-0 z-50 flex size-full items-center justify-center overflow-auto bg-dark/50;
   }
+
+  .text-congrats-outline {
+    -webkit-text-stroke: 0.1px #000;
+    text-shadow:
+      0px 0px 0 hsl(36, 100%, 78%),
+      0px 0px 0 hsl(36, 100%, 78%),
+      2px 2px 0 hsl(36, 100%, 78%),
+      2px 2px 0 hsl(36, 100%, 78%);
+  }
+
+  .congrats-time {
+    color: radial-gradient(
+        56.67% 339.22% at 67.73% 43.33%,
+        #d443ba 0%,
+        #ffbe12 62.69%,
+        #86c4d2 100%
+      )
+      /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+  }
+
+  .award-card-background {
+    background: linear-gradient(180deg, #ffd28e 0%, #9d6d52 100%);
+  }
 }

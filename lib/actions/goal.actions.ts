@@ -36,7 +36,7 @@ export const getGoalById = async (goalId: string) => {
     const goal = await GoalDocument.findById(goalId);
     const parsedGoal = GoalSchema.safeParse(goal);
     if (!parsedGoal.success) throw new Error("Failed to parse goal");
-    return JSON.parse(JSON.stringify(parsedGoal.data));
+    return { goal: parsedGoal.data };
   } catch (error) {
     throw handleError(error);
   }

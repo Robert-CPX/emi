@@ -39,6 +39,10 @@
     @apply font-normal text-[1.25rem] leading-[26px];
   }
 
+  .text-600-24-31 {
+    @apply font-[600] text-[1.5rem] leading-[31px];
+  }
+
   .text-500-18-22 {
     @apply font-[500] text-[1.125rem] leading-[22.5px];
   }
@@ -52,6 +56,14 @@
 
   .text-600-14-17 {
     @apply font-[600] text-[0.875rem] leading-[17px];
+  }
+
+  .text-600-24-30 {
+    @apply font-[600] text-[1.5rem] leading-[30px];
+  }
+
+  .text-200-48-60 {
+    @apply font-[200] text-[3rem] leading-[60px];
   }
 
   .separator {

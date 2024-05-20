@@ -59,6 +59,7 @@ export const generateTimeOptions = (): number[] => {
   for (let i = 15; i <= 120; i += 5) {
     list.push(i);
   }
+  list.unshift(0.1);
   return list;
 };
 
