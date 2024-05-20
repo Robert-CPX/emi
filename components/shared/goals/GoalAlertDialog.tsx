@@ -49,15 +49,15 @@ const GoalAlertDialog = () => {
                 "Have you successfully achieved this goal?"
               }
             </span>
-            <div className='flex w-full items-center justify-between text-dark'>
+            <div className='flex w-full items-center justify-between gap-3 text-dark'>
               <Button
                 onClick={() => router.push(pathname)}
-                className='h-[40px] w-[148px] rounded-[20px] border border-dark bg-light'>
+                className='h-[40px] flex-1 rounded-[20px] border border-dark bg-light'>
                 Cancel
               </Button>
               <Button
                 onClick={handleConfirmAction}
-                className='h-[40px] w-[148px] rounded-[20px] bg-primary'
+                className='h-[40px] flex-1 rounded-[20px] bg-primary'
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
