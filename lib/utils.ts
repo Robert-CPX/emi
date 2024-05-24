@@ -56,10 +56,10 @@ export const formatMinutesAndSeconds = (str: string | null): string => {
 
 export const generateTimeOptions = (): number[] => {
   const list: number[] = [];
-  for (let i = 15; i <= 120; i += 5) {
+  for (let i = 5; i <= 120; i += 5) {
     list.push(i);
   }
-  list.unshift(0.1);
+  // list.unshift(0.1);
   return list;
 };
 
