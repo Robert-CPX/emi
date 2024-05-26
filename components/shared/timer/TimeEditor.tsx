@@ -7,6 +7,9 @@ import { Input } from "@/components/ui/input"
 import { useEmi } from "@/context/EmiProvider"
 import { useEmiTime } from "@/context/EmiTimeProvider"
 import GoalMenu from "../goals/GoalMenu"
+import { useAuth } from "@clerk/nextjs"
+import { createActivity, cancelActivity } from "@/lib/actions/activity.actions"
+import { USER_SELECTED_GOAL_ID, USER_ACTIVITY_ID } from "@/constants/constants"
 
 interface TimeEditorProps {
   unarchivedGoalExist: boolean
@@ -19,6 +22,7 @@ const TimeEditor = (props: TimeEditorProps) => {
   const [seconds, setSeconds] = useState("00")
   const minuteRef = useRef<HTMLInputElement>(null)
   const { mode } = useEmi()
+  const { userId } = useAuth()
   // store the remaining time on context
   const { time: countdown, setTime: setCountdown, isRunning } = useEmiTime()
 
@@ -35,11 +39,21 @@ const TimeEditor = (props: TimeEditorProps) => {
   };
 
   // user start or stop the countdown
-  const handleCountDownAction = () => {
+  const handleCountDownAction = async () => {
     if (isRunning) {
       setCountdown(0);
+      // same logic in TimeSelector
+      const activityId = sessionStorage.getItem(USER_ACTIVITY_ID)
+      if (!activityId) return;
+      await cancelActivity({ activityId })
+      sessionStorage.removeItem(USER_ACTIVITY_ID)
     } else {
       setCountdown(parseInt(minutes) * 60 + parseInt(seconds));
+      // same logic in TimeSelector
+      const goalId = sessionStorage.getItem(USER_SELECTED_GOAL_ID)
+      if (!goalId || !userId) return;
+      const activityId = await createActivity({ type: 'goal', value: countdown, userId, goalId })
+      sessionStorage.setItem(USER_ACTIVITY_ID, activityId)
     }
   };
 

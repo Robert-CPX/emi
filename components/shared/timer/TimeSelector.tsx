@@ -32,6 +32,7 @@ const TimeSelector = (props: TimeSelectorProps) => {
   const { time: countdown, setTime: setCountdown } = useEmiTime()
   const handleConfirm = async () => {
     setCountdown(time);
+    // same logic in TimeEditor
     const goalId = sessionStorage.getItem(USER_SELECTED_GOAL_ID)
     if (!goalId || !userId) return;
     const activityId = await createActivity({ type: 'goal', value: time, userId, goalId })
@@ -40,6 +41,7 @@ const TimeSelector = (props: TimeSelectorProps) => {
 
   const handleCancel = async () => {
     setCountdown(0);
+    // same logic in TimeEditor
     const activityId = sessionStorage.getItem(USER_ACTIVITY_ID)
     if (!activityId) return;
     await cancelActivity({ activityId })
