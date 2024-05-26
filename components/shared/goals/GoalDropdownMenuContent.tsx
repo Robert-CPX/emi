@@ -10,14 +10,12 @@ import GoalSumup from "./GoalSumup"
 import GoalListHeader, { HIDE_TODO_KEY, HIDE_LONGTERM_KEY } from "./GoalListHeader"
 import GoalCard from "./GoalCard"
 import Link from "next/link"
-import GoalForm from "./GoalForm"
-import GoalAlertDialog from "./GoalAlertDialog"
 import { ChevronRight } from "lucide-react"
 import { useAuth } from "@clerk/nextjs"
 import { getGoals, checkArchiveGoalsExist } from "@/lib/actions/goal.actions"
 import { Goal } from "@/constants"
 import { redirect } from "next/navigation"
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 const GoalDropdownMenuContent = () => {
   const { mode } = useEmi()

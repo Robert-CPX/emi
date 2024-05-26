@@ -1,18 +1,21 @@
 'use client'
-import { useEmi } from "@/context/EmiProvider"
 import { useEffect, useState } from "react"
 import GoalSumup from "./GoalSumup"
 import GoalListHeader, { HIDE_TODO_KEY, HIDE_LONGTERM_KEY } from "./GoalListHeader"
 import GoalCard from "./GoalCard"
-import Link from "next/link"
 import { ChevronRight } from "lucide-react"
-import { useAuth } from "@clerk/nextjs"
 import { getGoals, checkArchiveGoalsExist } from "@/lib/actions/goal.actions"
 import { Goal } from "@/constants"
-import { redirect } from "next/navigation"
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation'
+import { Button } from "@/components/ui/button"
 
-const GoalsContent = () => {
+interface GoalsContentProps {
+  handleShowArchiveGoals: () => void
+  userId: string
+}
+
+const GoalsContent = (props: GoalsContentProps) => {
+  const { userId } = props
   const [todoIsHide, setTodoIsHide] = useState(false)
   const [longtermIsHide, setLongtermIsHide] = useState(false)
   const [archiveGoalsExist, setArchiveGoalsExist] = useState(false)
@@ -21,8 +24,7 @@ const GoalsContent = () => {
   const searchParams = useSearchParams()
   const hideTodo = searchParams.get(HIDE_TODO_KEY)
   const hideLongterm = searchParams.get(HIDE_LONGTERM_KEY)
-  const { userId } = useAuth()
-  if (!userId) redirect('/sign-in')
+
 
   useEffect(() => {
     const fetchGoals = async () => {
@@ -45,10 +47,12 @@ const GoalsContent = () => {
   }, [hideTodo, hideLongterm])
 
   return (
-    <div className="no-scrollbar flex size-full flex-col gap-4 overflow-auto rounded-[20px] border border-dark p-4">
-      <span className="text-700-16-20 uppercase">Goals</span>
+    <div className="no-scrollbar flex size-full flex-col gap-4 overflow-auto rounded-[20px] border border-dark">
+      <div className='relative inset-x-0 top-0 h-[56px] bg-light p-4'>
+        <span className="text-700-16-20 uppercase">Goals</span>
+      </div>
       <GoalSumup title="My Goals" />
-      <section className="flex flex-col gap-0">
+      <section className="flex flex-col gap-0 p-4">
         <GoalListHeader
           type="todo"
           isHide={todoIsHide}
@@ -71,7 +75,7 @@ const GoalsContent = () => {
           ))
         )}
       </section>
-      <section className="flex flex-col gap-0">
+      <section className="flex flex-col gap-0 p-4">
         <GoalListHeader
           type="longterm"
           isHide={longtermIsHide}
@@ -95,10 +99,13 @@ const GoalsContent = () => {
         )}
       </section>
       {archiveGoalsExist && (
-        <Link href="/goals/archived" className='text-400-16-20 flex h-[50px] w-full shrink-0 items-center justify-between rounded-[20px] bg-light px-3 text-dark'>
+        <Button
+          className='text-400-16-20 mx-4 mb-4 flex h-[50px] shrink-0 items-center justify-between rounded-[20px] bg-light text-dark'
+          onClick={props.handleShowArchiveGoals}
+        >
           <span>Archived goals</span>
           <ChevronRight />
-        </Link>
+        </Button>
       )}
     </div>
   )
