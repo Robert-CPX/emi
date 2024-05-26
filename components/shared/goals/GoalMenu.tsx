@@ -36,7 +36,7 @@ const GoalMenu = (props: GoalMenuProps) => {
       setGoals(latestGoals)
     }
     fetchGoals()
-  }, [userId, container])
+  })
 
   return (
     <div className={`flex-center h-[42px] w-fit self-start rounded-[20px] border border-light bg-dark/50 text-light backdrop-blur sm:self-center ${props.customClassName}`}>
