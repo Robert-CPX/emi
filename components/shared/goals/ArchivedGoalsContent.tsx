@@ -44,7 +44,7 @@ const ArchivedGoalsContent = (props: ArchivedGoalsContentProps) => {
   }, [hideTodo, hideLongterm])
 
   return (
-    <div className="no-scrollbar flex flex-col gap-4 overflow-auto rounded-[20px] border border-dark">
+    <div className="no-scrollbar flex size-full flex-col gap-4 overflow-auto rounded-[20px] border border-dark bg-[#F3F2EF]">
       <div className='relative inset-x-0 top-0 flex h-[56px] items-center justify-between bg-light p-4'>
         <span className="text-700-16-20 uppercase">Archived Goals</span>
         <Button

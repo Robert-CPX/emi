@@ -51,7 +51,7 @@ const GoalsContent = (props: GoalsContentProps) => {
   }, [hideTodo, hideLongterm])
 
   return (
-    <div className="no-scrollbar flex size-full flex-col overflow-auto rounded-[20px] border border-dark">
+    <div className="no-scrollbar flex size-full flex-col overflow-auto rounded-[20px] border border-dark bg-[#F3F2EF]">
       <div className='relative inset-x-0 top-0 h-[56px] bg-light p-4'>
         <span className="text-700-16-20 uppercase">Goals</span>
       </div>
