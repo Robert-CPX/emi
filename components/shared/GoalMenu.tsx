@@ -10,6 +10,7 @@ import { USER_SELECTED_GOAL_ID } from "@/constants/constants"
 
 interface GoalMenuProps {
   container?: string
+  customClassName?: string
 }
 
 const GoalMenu = (props: GoalMenuProps) => {
@@ -38,7 +39,7 @@ const GoalMenu = (props: GoalMenuProps) => {
   }, [userId, container])
 
   return (
-    <div className="flex-center h-[42px] w-fit self-start rounded-[20px] border border-light bg-dark/50 text-light backdrop-blur sm:hidden">
+    <div className={`flex-center h-[42px] w-fit self-start rounded-[20px] border border-light bg-dark/50 text-light backdrop-blur sm:self-center ${props.customClassName}`}>
       <DropdownMenu
         onOpenChange={(open) => {
           setIsOpen(open)

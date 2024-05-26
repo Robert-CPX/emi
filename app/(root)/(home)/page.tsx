@@ -44,7 +44,7 @@ const Home = () => {
             <GoalMenu container="home" />
           )}
           {/* Time Editor only show on desktop */}
-          <TimeEditor />
+          <TimeEditor unarchivedGoalExist={unarchivedGoalExist} />
           {/* Time Selector only show on mobile */}
           <TimeSelector unarchivedGoalExist={unarchivedGoalExist} />
         </section>

@@ -6,9 +6,15 @@ import { isMinuteInRange, isSecondInRange, formatMinutesAndSeconds } from "@/lib
 import { Input } from "@/components/ui/input"
 import { useEmi } from "@/context/EmiProvider"
 import { useEmiTime } from "@/context/EmiTimeProvider"
+import GoalMenu from "../GoalMenu"
+
+interface TimeEditorProps {
+  unarchivedGoalExist: boolean
+}
 
 // TimeEditor component only show on desktop
-const TimeEditor = () => {
+const TimeEditor = (props: TimeEditorProps) => {
+  const { unarchivedGoalExist } = props
   const [minutes, setMinutes] = useState("00")
   const [seconds, setSeconds] = useState("00")
   const minuteRef = useRef<HTMLInputElement>(null)
@@ -52,9 +58,9 @@ const TimeEditor = () => {
   }, [mode])
 
   return (
-    <div className={`relative isolate flex h-[54px] items-center justify-center max-md:hidden md:w-[248px] ${(mode === 'companion' || mode === 'dredge-up') && "hidden"}`}>
-      <div className="absolute inset-0 -z-10 rounded-[22px] bg-dark/50"></div>
-      <div className="flex w-full items-center justify-between px-3 text-primary-light">
+    <div className={`isolate flex items-center justify-between gap-3 max-md:hidden ${(mode === 'companion' || mode === 'dredge-up') && "hidden"}`}>
+      {unarchivedGoalExist && <GoalMenu container="timeEditor" customClassName="h-[54px] basis-[280px]" />}
+      <div className="flex h-[54px] w-full items-center justify-between rounded-[22px] bg-dark/50 p-2 text-primary-light">
         <div className="ml-6 flex items-center justify-center gap-1">
           <Input
             id="minutes"
