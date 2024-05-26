@@ -17,7 +17,7 @@ const GoalsContentWrapper = () => {
   if (!userId) redirect('/sign-in')
 
   return (
-    <section className='relative bg-transparent max-md:hidden'>
+    <section className='relative isolate z-50 bg-transparent max-md:hidden'>
       <Button
         className="flex-center no-focus mb-4 size-[48px] rounded-full border border-dark bg-light"
         onClick={() => setIsOpen(!isOpen)}
