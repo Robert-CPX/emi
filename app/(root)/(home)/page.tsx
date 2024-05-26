@@ -2,7 +2,7 @@
 import Emi from "@/components/shared/Emi"
 import ModeTabs from "@/components/shared/ModeTabs"
 import BrandMenu from "@/components/shared/brand-menu"
-import GoalMenu from "@/components/shared/GoalMenu"
+import { GoalMenu, GoalsContentWrapper } from "@/components/shared/goals"
 import { Chat, ChatMobileBackground, ChatHistoryMobile } from "@/components/shared/chat"
 import ActionsMenu from "@/components/shared/ActionsMenu"
 import { TimeEditor, TimeSelector } from "@/components/shared/timer"
@@ -34,8 +34,11 @@ const Home = () => {
         <Emi />
       </div>
       <div className="isolate flex h-full justify-between p-4 max-md:flex-col md:px-8">
-        {/* Brand menu only show on desktop */}
-        <BrandMenu />
+        {/* Brand & GoalsContentWrapper menu only show on desktop */}
+        <section className="flex flex-col items-start justify-start gap-4">
+          <BrandMenu />
+          <GoalsContentWrapper />
+        </section>
         {/* this section is on top */}
         <section className="z-10 flex flex-col items-center justify-start gap-4">
           {/* Mode Tabs disappear only when timer is running */}

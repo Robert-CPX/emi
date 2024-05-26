@@ -7,7 +7,7 @@ interface GoalSumupProps {
 const GoalSumup = (props: GoalSumupProps) => {
   const { title } = props
   return (
-    <section className='orange-gradient-background text-400-14-17 flex-center h-[50px] w-full rounded-[20px] uppercase text-dark'>
+    <section className='orange-gradient-background text-400-14-17 -mx-8 flex h-[50px] shrink-0 items-center justify-center uppercase text-dark'>
       {title}
     </section>
   )

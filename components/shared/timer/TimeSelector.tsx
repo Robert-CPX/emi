@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { useEmi } from "@/context/EmiProvider"
 import { useEmiTime } from "@/context/EmiTimeProvider"
 import { generateTimeOptions } from '@/lib/utils'
-import GoalMenu from "../GoalMenu"
+import GoalMenu from "../goals/GoalMenu"
 import { createActivity, cancelActivity } from "@/lib/actions/activity.actions"
 import { useAuth } from "@clerk/nextjs"
 import { USER_SELECTED_GOAL_ID, USER_ACTIVITY_ID } from "@/constants/constants"

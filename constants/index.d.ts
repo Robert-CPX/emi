@@ -33,9 +33,10 @@ export type Goal = {
   _id: string;
   title: string;
   description: string;
-  _icing?: string;
+  icing?: string;
   status: string;
   activities?: ObjectId[];
   createdAt: Date;
   updatedAt: Date;
+  duration: number;
 };

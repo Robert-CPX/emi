@@ -85,7 +85,7 @@ const GoalForm = ({
         editGoal) &&
         <dialog className='dialog-background'>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="mx-6 flex w-full flex-col gap-4 rounded-[20px] bg-light px-4 py-5">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="mx-6 flex flex-col gap-4 rounded-[20px] bg-light px-4 py-5">
               <FormField
                 control={form.control}
                 name="title"
@@ -114,7 +114,7 @@ const GoalForm = ({
                   </FormItem>
                 )}
               />
-              <div className='flex items-center justify-between'>
+              <div className='flex items-center justify-between gap-3'>
                 <Link href={pathname}>
                   <Button type="button" className='h-[40px] w-[148px] rounded-[20px] border border-dark text-dark'>Cancel</Button>
                 </Link>

@@ -66,6 +66,10 @@
     @apply font-[200] text-[3rem] leading-[60px];
   }
 
+  .text-700-16-20 {
+    @apply font-[700] text-[1rem] leading-[20px];
+  }
+
   .separator {
     @apply bg-[#E4E3E3] border-[0.5px];
   }

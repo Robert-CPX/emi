@@ -6,7 +6,7 @@ import { isMinuteInRange, isSecondInRange, formatMinutesAndSeconds } from "@/lib
 import { Input } from "@/components/ui/input"
 import { useEmi } from "@/context/EmiProvider"
 import { useEmiTime } from "@/context/EmiTimeProvider"
-import GoalMenu from "../GoalMenu"
+import GoalMenu from "../goals/GoalMenu"
 
 interface TimeEditorProps {
   unarchivedGoalExist: boolean

@@ -6,8 +6,8 @@ import { ChevronDown, ChevronRight } from "lucide-react"
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation';
 
-const HIDE_TODO_KEY = "hideTodo"
-const HIDE_LONGTERM_KEY = "hideLongterm"
+export const HIDE_TODO_KEY = "hideTodo"
+export const HIDE_LONGTERM_KEY = "hideLongterm"
 
 interface GoalListHeaderProps {
   type: "todo" | "longterm"
