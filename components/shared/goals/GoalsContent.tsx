@@ -24,7 +24,11 @@ const GoalsContent = (props: GoalsContentProps) => {
   const searchParams = useSearchParams()
   const hideTodo = searchParams.get(HIDE_TODO_KEY)
   const hideLongterm = searchParams.get(HIDE_LONGTERM_KEY)
-
+  //force update list
+  const addGoal = searchParams.get("add");
+  const editGoal = searchParams.get("edit");
+  const deleteGoal = searchParams.get("delete");
+  const archiveGoal = searchParams.get("archive");
 
   useEffect(() => {
     const fetchGoals = async () => {
@@ -35,7 +39,7 @@ const GoalsContent = (props: GoalsContentProps) => {
       setArchiveGoalsExist(archiveGoalsExist)
     }
     fetchGoals()
-  }, [userId])
+  }, [userId, addGoal, editGoal, deleteGoal, archiveGoal])
 
   useEffect(() => {
     if (hideTodo) {
