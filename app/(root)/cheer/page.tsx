@@ -14,28 +14,30 @@ const Page = ({
   const status = searchParams.status as string
 
   return (
-    <main className='no-scrollbar flex size-full grow flex-col overflow-auto bg-dark px-4 py-24'>
-      {initDialog.map((message, index) => (
-        <React.Fragment key={`message-item-${index}`}>
+    <main className='flex size-full items-center justify-center bg-dark'>
+      <div className='flex size-full flex-col px-4 py-24 sm:w-1/2'>
+        {initDialog.map((message, index) => (
+          <React.Fragment key={`message-item-${index}`}>
+            <div className="flex items-start justify-start gap-1 ">
+              <Image src="/assets/images/emi_profile.svg" width={48} height={48} alt="avatar" className="my-2 size-[48px] rounded-full" />
+              <div className="chat-bubble-container-mobile-history chat-bubble-mobile-history-ai">
+                <span className="chat-text text-dark">{message}</span>
+              </div>
+            </div>
+          </React.Fragment>
+        ))}
+        {status === "done" && (
           <div className="flex items-start justify-start gap-1">
             <Image src="/assets/images/emi_profile.svg" width={48} height={48} alt="avatar" className="my-2 size-[48px] rounded-full" />
             <div className="chat-bubble-container-mobile-history chat-bubble-mobile-history-ai">
-              <span className="chat-text text-dark">{message}</span>
+              <span className="chat-text text-dark">{congratulationMessage}</span>
             </div>
           </div>
-        </React.Fragment>
-      ))}
-      {status === "done" && (
-        <div className="flex items-start justify-start gap-1">
-          <Image src="/assets/images/emi_profile.svg" width={48} height={48} alt="avatar" className="my-2 size-[48px] rounded-full" />
-          <div className="chat-bubble-container-mobile-history chat-bubble-mobile-history-ai">
-            <span className="chat-text text-dark">{congratulationMessage}</span>
-          </div>
+        )}
+        {/* workaround in order to hide the component and at the same time execute the code within the component */}
+        <div className={`flex self-end ${status && "opacity-0"}`}>
+          <RespondSelector />
         </div>
-      )}
-      {/* workaround in order to hide the component and at the same time execute the code within the component */}
-      <div className={`flex self-end ${status && "opacity-0"}`}>
-        <RespondSelector />
       </div>
     </main>
   )
