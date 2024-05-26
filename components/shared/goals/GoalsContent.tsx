@@ -47,12 +47,12 @@ const GoalsContent = (props: GoalsContentProps) => {
   }, [hideTodo, hideLongterm])
 
   return (
-    <div className="no-scrollbar flex size-full flex-col gap-4 overflow-auto rounded-[20px] border border-dark">
+    <div className="no-scrollbar flex size-full flex-col overflow-auto rounded-[20px] border border-dark">
       <div className='relative inset-x-0 top-0 h-[56px] bg-light p-4'>
         <span className="text-700-16-20 uppercase">Goals</span>
       </div>
       <GoalSumup title="My Goals" />
-      <section className="flex flex-col gap-0 p-4">
+      <section className="flex flex-col gap-0 px-4 py-2">
         <GoalListHeader
           type="todo"
           isHide={todoIsHide}
@@ -75,7 +75,7 @@ const GoalsContent = (props: GoalsContentProps) => {
           ))
         )}
       </section>
-      <section className="flex flex-col gap-0 p-4">
+      <section className="flex flex-col gap-0 px-4 py-2">
         <GoalListHeader
           type="longterm"
           isHide={longtermIsHide}

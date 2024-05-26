@@ -42,7 +42,7 @@ const GoalAlertDialog = () => {
     <>
       {(deleteGoalId || archiveGoalId) && (
         <dialog className="dialog-background">
-          <div className={`flex-center mx-6 w-full flex-col gap-6 rounded-[20px] bg-light px-6 py-14 ${isExplosion && "opacity-0"}`}>
+          <div className={`flex-center mx-6 flex-col gap-6 rounded-[20px] bg-light px-6 py-14 ${isExplosion && "opacity-0"}`}>
             <span>
               {deleteGoalId ?
                 "Are you sure you want to delete your goal?" :

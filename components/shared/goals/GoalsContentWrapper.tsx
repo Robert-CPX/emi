@@ -7,6 +7,8 @@ import GoalsContent from './GoalsContent'
 import ArchivedGoalsContent from './ArchivedGoalsContent'
 import { useAuth } from "@clerk/nextjs"
 import { redirect } from "next/navigation"
+import GoalForm from './GoalForm'
+import GoalAlertDialog from './GoalAlertDialog'
 
 const GoalsContentWrapper = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -31,7 +33,7 @@ const GoalsContentWrapper = () => {
             />
           </div>
         )}
-        {showArchiveGoals && (
+        {(showArchiveGoals && isOpen) && (
           <div className='relative h-[680px] w-[360px]'>
             <ArchivedGoalsContent
               userId={userId}
@@ -40,6 +42,8 @@ const GoalsContentWrapper = () => {
           </div>
         )}
       </div>
+      <GoalForm clerkId={userId} />
+      <GoalAlertDialog />
     </section>
   )
 }
