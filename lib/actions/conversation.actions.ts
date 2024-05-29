@@ -1,6 +1,6 @@
 'use server'
 import { db } from "@/database/firebase";
-import { collection, getDoc, setDoc, doc, Timestamp, query, where, getDocs } from 'firebase/firestore';
+import { collection, setDoc, doc, query, where, getDocs } from 'firebase/firestore';
 import { handleError } from "../utils";
 import { CreateConversationParams } from "./shared";
 import { getMongoUserByClerkId } from "./user.actions";
@@ -18,7 +18,7 @@ export const getOrCreateConversation = async (params: CreateConversationParams) 
 
   try {
     const conversationsRef = collection(db, "conversations");
-    const q = query(conversationsRef, where('participants', 'in', [["emi", user._id].sort()]));
+    const q = query(conversationsRef, where('participants', 'in', [["emi", user._id.toString()].sort()]));
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
       return querySnapshot.docs[0].data() as Conversation;
@@ -26,7 +26,7 @@ export const getOrCreateConversation = async (params: CreateConversationParams) 
       const newConversationRef = doc(conversationsRef);
       const newConversationData: Conversation = {
         id: newConversationRef.id,
-        participants: ["emi", user._id].sort(),
+        participants: ["emi", user._id.toString()].sort(),
         createdAt: Date.now(),
         updatedAt: Date.now(),
       };
