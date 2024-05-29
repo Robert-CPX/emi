@@ -40,10 +40,11 @@ const Page = () => {
       <div className="emi-main">
         <video
           ref={videoRef}
-          muted
+          muted playsInline preload="auto" controls
           className="size-full object-cover"
         >
-          <source src="assets/videos/onboarding-1.mp4" type="video/mp4" />
+          <source src="/assets/videos/onboarding-1.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
         </video>
       </div>
       {showEntry && (
