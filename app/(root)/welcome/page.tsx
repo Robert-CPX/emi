@@ -26,7 +26,7 @@ const Page = () => {
     videoRef.current.play().catch((error) => {
       console.error('Error attempting to play video:', error);
     });
-  }, [videoRef])
+  }, [])
 
   useEffect(() => {
     const timeout = setTimeout(() => {
