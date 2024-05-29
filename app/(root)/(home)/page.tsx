@@ -7,7 +7,7 @@ import { Chat, ChatMobileBackground, ChatHistoryMobile } from "@/components/shar
 import ActionsMenu from "@/components/shared/ActionsMenu"
 import { TimeEditor, TimeSelector } from "@/components/shared/timer"
 import { redirect } from 'next/navigation'
-import { useAuth } from "@clerk/nextjs"
+import { useAuth } from '@clerk/clerk-react';
 import { useEmi } from "@/context/EmiProvider"
 import { useEffect, useState } from "react"
 import { checkUnarchivedGoalExist } from "@/lib/actions/goal.actions"

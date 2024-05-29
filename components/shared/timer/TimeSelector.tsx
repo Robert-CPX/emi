@@ -8,7 +8,7 @@ import { useEmiTime } from "@/context/EmiTimeProvider"
 import { generateTimeOptions } from '@/lib/utils'
 import GoalMenu from "../goals/GoalMenu"
 import { createActivity, cancelActivity } from "@/lib/actions/activity.actions"
-import { useAuth } from "@clerk/nextjs"
+import { useAuth } from '@clerk/clerk-react';
 import { USER_SELECTED_GOAL_ID, USER_ACTIVITY_ID } from "@/constants/constants"
 
 interface TimeSelectorProps {

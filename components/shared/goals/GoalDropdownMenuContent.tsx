@@ -11,7 +11,7 @@ import GoalListHeader, { HIDE_TODO_KEY, HIDE_LONGTERM_KEY } from "./GoalListHead
 import GoalCard from "./GoalCard"
 import Link from "next/link"
 import { ChevronRight } from "lucide-react"
-import { useAuth } from "@clerk/nextjs"
+import { useAuth } from '@clerk/clerk-react';
 import { getGoals, checkArchiveGoalsExist } from "@/lib/actions/goal.actions"
 import { Goal } from "@/constants"
 import { redirect } from "next/navigation"

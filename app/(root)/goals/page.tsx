@@ -1,6 +1,6 @@
 import MobileNavigationBar from "@/components/shared/MobileNavigationBar"
 import { GoalCard, GoalSumup, GoalListHeader, GoalForm, GoalAlertDialog } from "@/components/shared/goals"
-import { auth } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { getGoals, checkArchiveGoalsExist } from "@/lib/actions/goal.actions"
 import { ChevronRight } from "lucide-react"

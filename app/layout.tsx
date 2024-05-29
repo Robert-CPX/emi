@@ -36,16 +36,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${lexend_deca.variable} ${lemon.variable}`}>
-      <body>
-        <ClerkProvider appearance={{
-          variables: {
-            colorPrimary: "#FFD28E",
-          }
-        }}>
+    <ClerkProvider appearance={{
+      variables: {
+        colorPrimary: "#FFD28E",
+      }
+    }}>
+      <html lang="en" className={`${lexend_deca.variable} ${lemon.variable}`} suppressHydrationWarning>
+        <body>
           {children}
-        </ClerkProvider>
-      </body>
-    </html>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

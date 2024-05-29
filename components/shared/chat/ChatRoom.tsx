@@ -13,7 +13,7 @@ import SingleChatBox from "./SingleChatBox";
 import MiniChatBubble from "./MiniChatBubble";
 import { useEmiTime } from "@/context/EmiTimeProvider";
 import { EmotionsMap } from "@/constants";
-import { useAuth } from '@clerk/nextjs'
+import { useAuth } from '@clerk/clerk-react';
 import { getOrCreateConversation } from '@/lib/actions/conversation.actions';
 import { saveMessages } from '@/lib/actions/message.actions';
 

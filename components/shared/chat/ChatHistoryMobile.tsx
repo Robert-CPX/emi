@@ -7,7 +7,7 @@ import { useEffect, useState } from "react"
 import Image from "next/image";
 import { getOrCreateConversation } from "@/lib/actions/conversation.actions";
 import { fetchMessages } from "@/lib/actions/message.actions";
-import { useAuth } from '@clerk/nextjs'
+import { useAuth } from '@clerk/clerk-react';
 import Message from "@/database/models/message.model";
 
 const ChatHistoryMobile = () => {

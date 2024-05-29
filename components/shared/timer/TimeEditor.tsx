@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { useEmi } from "@/context/EmiProvider"
 import { useEmiTime } from "@/context/EmiTimeProvider"
 import GoalMenu from "../goals/GoalMenu"
-import { useAuth } from "@clerk/nextjs"
+import { useAuth } from '@clerk/clerk-react';
 import { createActivity, cancelActivity } from "@/lib/actions/activity.actions"
 import { USER_SELECTED_GOAL_ID, USER_ACTIVITY_ID } from "@/constants/constants"
 

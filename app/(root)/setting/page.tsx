@@ -37,8 +37,7 @@ const Page = () => {
       </Link>
 
       <SignOutButton
-        signOutOptions={{ sessionId: session?.id }}
-        signOutCallback={() => router.push('/welcome')}
+        redirectUrl="/sign-in"
       >
         <Button className="h-[52px] cursor-pointer rounded-[20px] bg-light text-left text-[1rem] font-normal leading-[20px] text-[#EB3A3A]">Log out</Button>
       </SignOutButton>

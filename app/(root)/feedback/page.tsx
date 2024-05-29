@@ -16,7 +16,7 @@ import {
 import MobileNavigationBar from "@/components/shared/MobileNavigationBar"
 import { createFeedback } from "@/lib/actions/feedback.actions"
 import { getMongoUserByClerkId } from "@/lib/actions/user.actions"
-import { useAuth } from '@clerk/nextjs'
+import { useAuth } from '@clerk/clerk-react';
 import { redirect } from 'next/navigation'
 import { toast } from '@/components/ui/use-toast';
 

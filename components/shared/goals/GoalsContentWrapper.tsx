@@ -5,7 +5,7 @@ import React from 'react'
 import Image from 'next/image'
 import GoalsContent from './GoalsContent'
 import ArchivedGoalsContent from './ArchivedGoalsContent'
-import { useAuth } from "@clerk/nextjs"
+import { useAuth } from '@clerk/clerk-react';
 import { redirect } from "next/navigation"
 import GoalForm from './GoalForm'
 import GoalAlertDialog from './GoalAlertDialog'

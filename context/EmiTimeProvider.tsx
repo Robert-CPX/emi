@@ -4,7 +4,7 @@ import { COUNTDOWN_ID, COUNTDOWN_REMAINING_SECONDS } from "@/constants/constants
 import React, { createContext, useContext, useEffect, useState } from "react"
 import { useEmi } from "./EmiProvider"
 import { setANewTimer } from "@/lib/actions/interaction.actions"
-import { useAuth } from "@clerk/nextjs"
+import { useAuth } from '@clerk/clerk-react';
 
 type EmiTimeContextType = {
   time: number // in seconds

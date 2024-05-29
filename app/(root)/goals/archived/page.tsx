@@ -1,7 +1,7 @@
 import MobileNavigationBar from "@/components/shared/MobileNavigationBar"
 import { GoalListHeader } from "@/components/shared/goals"
 import { getArchivedGoals } from "@/lib/actions/goal.actions"
-import { auth } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Image from 'next/image'
 import { formatGoalDurationTime } from '@/lib/utils'
