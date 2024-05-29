@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuGro
 import { ChevronUp, ChevronDown } from "lucide-react"
 import React, { useEffect, useState } from "react"
 import { getLatestGoals } from "@/lib/actions/goal.actions"
-import { useAuth } from "@clerk/nextjs"
+import { useAuth } from '@clerk/clerk-react';
 import { Goal } from "@/constants"
 import { USER_SELECTED_GOAL_ID } from "@/constants/constants"
 
@@ -36,7 +36,7 @@ const GoalMenu = (props: GoalMenuProps) => {
       setGoals(latestGoals)
     }
     fetchGoals()
-  })
+  }, [userId])
 
   return (
     <div className={`flex-center h-[42px] w-fit self-start rounded-[20px] border border-light bg-dark/50 text-light backdrop-blur sm:self-center ${props.customClassName}`}>
