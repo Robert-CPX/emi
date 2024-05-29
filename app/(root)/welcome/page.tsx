@@ -43,7 +43,7 @@ const Page = () => {
           muted
           className="size-full object-cover"
         >
-          <source src="assets/videos/onboarding.mp4" type="video/mp4" />
+          <source src="assets/videos/onboarding-1.mp4" type="video/mp4" />
         </video>
       </div>
       {showEntry && (
