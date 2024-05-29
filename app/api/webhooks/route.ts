@@ -68,7 +68,6 @@ export async function POST(req: Request) {
         username: username ?? id,
         profilePic: image_url
       },
-      path: `/profile/${id}`
     });
     return NextResponse.json({ message: "User updated successfully", user: mongoUser })
   }

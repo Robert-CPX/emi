@@ -11,7 +11,6 @@ export type CreateUserParams = {
 export type UpdateUserParams = {
   clerkId: string;
   updateData: Partial<User>;
-  path: string; // For page revalidate purposes
 }
 
 export type DeleteUserParams = {

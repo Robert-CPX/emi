@@ -21,13 +21,12 @@ export const createUser = async (params: CreateUserParams) => {
 export const updateUser = async (params: UpdateUserParams) => {
   try {
     await connectToDatabase();
-    const { clerkId, updateData, path } = params;
+    const { clerkId, updateData } = params;
     const updatedUser = await UserDocument.findOneAndUpdate(
       { clerkId },
       updateData,
       { new: true }
     );
-    revalidatePath(path);
     return updatedUser;
   } catch (error) {
     handleError(error);
