@@ -1,5 +1,4 @@
 // a welcome page for new user, with a video background.
-// after user signedout, or direct to this page without login in state, it won't redirect to the home page.
 'use client'
 
 import { useEffect, useRef, useState } from "react"
@@ -18,16 +17,16 @@ const Page = () => {
     }, 43000);
 
     return () => {
-      if (redirectTimeout) {
-        clearTimeout(redirectTimeout);
-      };
+      clearTimeout(redirectTimeout);
     };
   }, [router]);
 
   useEffect(() => {
     if (!videoRef.current) return;
-    videoRef.current.play();
-  }, [])
+    videoRef.current.play().catch((error) => {
+      console.error('Error attempting to play video:', error);
+    });
+  }, [videoRef])
 
   useEffect(() => {
     const timeout = setTimeout(() => {
