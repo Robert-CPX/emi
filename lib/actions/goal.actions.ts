@@ -19,7 +19,7 @@ export const createGoal = async (params: CreateGoalParams) => {
     if (!user) throw new Error("User not found");
 
     const prompt = generatePromptWhileCreatingAGoal(title, description, isLongTerm);
-    const { reply } = await simpleConversation({ text: prompt, endUserFullname: user.username, endUserId: userId });
+    const { reply } = await simpleConversation({ text: prompt, endUserFullname: user.username, endUserId: user._id });
 
     await GoalDocument.create(
       { title, description, icing: reply, duration, creator: user._id, isLongTerm }

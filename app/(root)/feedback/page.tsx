@@ -38,7 +38,7 @@ const Page = () => {
   const onSubmit = async (values: z.infer<typeof FeedbackSchema>) => {
     try {
       const user = await getMongoUserByClerkId({ userId })
-      await createFeedback({ detail: values.feedback, author: user.id })
+      await createFeedback({ detail: values.feedback, author: user._id })
       form.reset()
       toast({ description: 'Answer posted successfully' })
     } catch (error) {
