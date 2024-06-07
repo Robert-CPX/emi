@@ -10,6 +10,16 @@ import GoalMenu from "../goals/GoalMenu"
 import { useAuth } from '@clerk/clerk-react';
 import { createActivity, cancelActivity } from "@/lib/actions/activity.actions"
 import { USER_SELECTED_GOAL_ID, USER_ACTIVITY_ID } from "@/constants/constants"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 interface TimeEditorProps {
   unarchivedGoalExist: boolean
@@ -93,12 +103,35 @@ const TimeEditor = (props: TimeEditorProps) => {
             onChange={handleSecondsChange}
           />
         </div>
-        <Button
-          className="h-[40px] w-[80px] rounded-[20px] bg-dark text-[1rem] font-[500] leading-[20px]"
-          onClick={handleCountDownAction}
-        >
-          {isRunning ? "Stop" : "Start"}
-        </Button>
+        {isRunning ? (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button className="h-[40px] w-[80px] rounded-[20px] bg-dark text-[1rem] font-[500] leading-[20px]">Stop</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="flex flex-col items-center justify-center">
+              <AlertDialogHeader>
+                <AlertDialogDescription>
+                  Emi will be so lonely without you. Made your mind to stop?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter className="flex flex-row items-baseline justify-between gap-4">
+                <AlertDialogCancel className="h-[40px] w-[140px] rounded-[20px] border border-dark">
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction onClick={handleCountDownAction} className="h-[40px] w-[140px] rounded-[20px] bg-primary">
+                  Yes, stop
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        ) : (
+          <Button
+            className="h-[40px] w-[80px] rounded-[20px] bg-dark text-[1rem] font-[500] leading-[20px]"
+            onClick={handleCountDownAction}
+          >
+            Start
+          </Button>
+        )}
       </div>
     </div>
   )

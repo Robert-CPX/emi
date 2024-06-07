@@ -10,6 +10,16 @@ import GoalMenu from "../goals/GoalMenu"
 import { createActivity, cancelActivity } from "@/lib/actions/activity.actions"
 import { useAuth } from '@clerk/clerk-react';
 import { USER_SELECTED_GOAL_ID, USER_ACTIVITY_ID } from "@/constants/constants"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 interface TimeSelectorProps {
   unarchivedGoalExist: boolean
@@ -66,13 +76,28 @@ const TimeSelector = (props: TimeSelectorProps) => {
           <span className='mx-auto flex h-14 w-[128px] items-center justify-center rounded-[28px] border border-primary-light bg-dark/50 text-[1rem] font-[500] leading-[20px]'>
             {remainMinutes}:{remainSeconds}
           </span>
-          <Button
-            size="icon"
-            className='size-[40px] rounded-full border border-primary-light bg-dark/50'
-            onClick={handleCancel}
-          >
-            <X />
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button size="icon" className='size-[40px] rounded-full border border-primary-light bg-dark/50'>
+                <X />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="flex w-[380px] flex-col items-center justify-center rounded-xl">
+              <AlertDialogHeader>
+                <AlertDialogDescription>
+                  Emi will be so lonely without you. Made your mind to stop?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter className="flex flex-row items-baseline justify-between gap-4">
+                <AlertDialogCancel className="h-[40px] w-[140px] rounded-[20px] border border-dark">
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction onClick={handleCancel} className="h-[40px] w-[140px] rounded-[20px] bg-primary">
+                  Yes, stop
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       ) : (
         <>
