@@ -13,7 +13,13 @@ import { EMI_RESOURCES, EMI_ANIMATIONS, EMI_CLICK_AREA } from '@/constants/const
 import { playSound } from "@/lib/utils"
 import { AUDIO_RESOURCES } from "@/constants/constants"
 
-const Emi = () => {
+interface EmiProps {
+  isNewUser: boolean;
+  isTodayFirstEnter: boolean;
+}
+
+const Emi = (props: EmiProps) => {
+  const { isNewUser, isTodayFirstEnter } = props;
   const mountRef = useRef<HTMLDivElement>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
   const vrmRef = useRef<any>(null); // Use a more specific type for your VRM model
@@ -36,7 +42,11 @@ const Emi = () => {
   const companionModeCameraPositionRef = useRef<[number, number, number]>([0, 1.5, 2.4]);
   const companionModeCameraTargetRef = useRef<[number, number, number]>([0, 1.2, 0]);
   const focusLayerIdxRef = useRef<number>(1);
-  
+
+  useEffect(() => {
+    console.log("isNewUser: ", isNewUser, "isTodayFirstEnter: ", isTodayFirstEnter)
+  }, [isNewUser, isTodayFirstEnter])
+
   useEffect(() => {
     if (!mode) return;
     console.log(mode);
@@ -65,9 +75,9 @@ const Emi = () => {
     if (!mixerRef.current) {
       throw new Error('mixerRef.current is not found.');
     }
-    
+
     // play random gesture if there is one
-    if(animation.gestures.length > 0){ 
+    if (animation.gestures.length > 0) {
       const randIdx = Math.floor(Math.random() * animation.gestures.length);
       loadAndPlayAnimation(animation.gestures[randIdx], false);
       const onFinished = () => {
@@ -78,7 +88,7 @@ const Emi = () => {
       mixerRef.current.addEventListener('finished', onFinished);
     } else {
       loadAndPlayAnimation(animation.idle);
-    } 
+    }
   }, [emotion]);
 
   useEffect(() => {
@@ -142,14 +152,14 @@ const Emi = () => {
       loadAndPlayAnimation(EMI_ANIMATIONS.DEFAULT.idle);
 
       //setup speak animation
-      const speak_interval = 0 
+      const speak_interval = 0
       const speakTrack = new THREE.NumberKeyframeTrack(
-        vrmRef.current.expressionManager.getExpressionTrackName( 'aa' ), // name
-        [ 0.0, 0.2, 0.4,  speak_interval], // times
-        [ 0.0, 0.3, 0.0, 0.0 ] // values
+        vrmRef.current.expressionManager.getExpressionTrackName('aa'), // name
+        [0.0, 0.2, 0.4, speak_interval], // times
+        [0.0, 0.3, 0.0, 0.0] // values
       );
-      const clip = new THREE.AnimationClip( 'Animation', 0.4 + speak_interval, [ speakTrack ] );
-      speakAnimationRef.current = mixerRef.current?.clipAction( clip )
+      const clip = new THREE.AnimationClip('Animation', 0.4 + speak_interval, [speakTrack]);
+      speakAnimationRef.current = mixerRef.current?.clipAction(clip)
 
       async function loadModel(resource: string, layer: number = 0): Promise<THREE.Group> {
         const gltf = await gltfLoaderRef.current.loadAsync(resource);
@@ -175,11 +185,11 @@ const Emi = () => {
 
       const animate = () => {
         const deltaTime = clockRef.current?.getDelta();
-        if(deltaTime){
+        if (deltaTime) {
           mixerRef.current?.update(deltaTime);
           vrm.update(deltaTime);
         }
-        renderer.render( scene, camera );
+        renderer.render(scene, camera);
       };
       renderer.setAnimationLoop(animate);
     };
@@ -225,10 +235,10 @@ const Emi = () => {
           animation = EMI_CLICK_AREA[area].animation;
         }
       }
-      if (!animation){
+      if (!animation) {
         animation = EMI_CLICK_AREA.OTHER.animation;
       }
-      
+
       const onFinished = () => {
         if (!mixerRef.current) return; // Check for null
         mixerRef.current.removeEventListener('finished', onFinished); // Clean up the listener
@@ -262,7 +272,7 @@ const Emi = () => {
     const newAction = mixerRef.current?.clipAction(clip);
     newAction.clampWhenFinished = true;
     newAction.loop = shouldLoop ? THREE.LoopRepeat : THREE.LoopOnce;
-    
+
     // If there's a currently active action, fade it out
     if (mainAnimationRef.current) {
       newAction.weight = 1;

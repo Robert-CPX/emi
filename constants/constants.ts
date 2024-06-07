@@ -14,6 +14,8 @@ export const COUNTDOWN_REMAINING_SECONDS = 'timer_countdown_remaining_seconds';
 export const USER_SELECTED_GOAL_ID = 'selected_goal_id';
 export const USER_ACTIVITY_ID = 'inprogress_activity_id';
 
+export const NEW_USER = 'new_user';
+
 export const EMI_RESOURCES = {
   character: 'emi/emi.vrm',
   background: 'emi/background.jpg',

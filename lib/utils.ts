@@ -125,3 +125,11 @@ export const generatePromptWhileCreatingAGoal = (
   const p2 = 'Please go directly, no Hello or greeting. Just start with the encouraging words. Thank you!'
   return p1 + p2;
 }
+
+export const isOver24Hours = (dateString: string): boolean => {
+  const currentDate = new Date();
+  const givenDate = new Date(dateString);
+  const timeDifference = currentDate.getTime() - givenDate.getTime();
+  const hoursDifference = timeDifference / (1000 * 60 * 60);
+  return hoursDifference > 24;
+};

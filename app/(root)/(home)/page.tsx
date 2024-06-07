@@ -11,27 +11,56 @@ import { useAuth } from '@clerk/clerk-react';
 import { useEmi } from "@/context/EmiProvider"
 import { useEffect, useState } from "react"
 import { checkUnarchivedGoalExist } from "@/lib/actions/goal.actions"
+import { getMongoUserByClerkId, updateUser } from "@/lib/actions/user.actions"
+import { NEW_USER } from "@/constants/constants"
+import { isOver24Hours } from "@/lib/utils"
 
 const Home = () => {
   const { userId } = useAuth()
   if (!userId) redirect('/sign-in')
   const [unarchivedGoalExist, setUnarchivedGoalExist] = useState(false)
+  const [isTodayFirstEnter, setIsTodayFirstEnter] = useState(false)
+  const [isNewUser, setIsNewUser] = useState(false)
 
   const { mode } = useEmi()
 
-  // TODO: redirect here is bad, need to refactor, global mode also need to be refactored
   useEffect(() => {
-    checkUnarchivedGoalExist({ userId }).then((exist) => setUnarchivedGoalExist(exist))
+    setIsNewUser(sessionStorage.getItem(NEW_USER) === 'true')
+    const updateInfo = async () => {
+      try {
+        const [user, isExist] = await Promise.all([
+          getMongoUserByClerkId({ userId }),
+          checkUnarchivedGoalExist({ userId })
+        ]);
+        setUnarchivedGoalExist(isExist);
+        if (user.lastActiveAt) {
+          setIsTodayFirstEnter(isOver24Hours(user.lastActiveAt))
+        }
+        await updateUser({
+          clerkId: userId,
+          updateData: {
+            lastActiveAt: new Date(),
+          },
+        });
+        console.log("user loginedddddddd")
+      } catch (error) {
+        // Handle error here
+      }
+    }
+    updateInfo()
+  }, [userId])
+
+  useEffect(() => {
     if (mode === 'cheer') {
       redirect("/cheer")
     }
-  }, [mode, userId])
+  }, [mode])
 
   return (
     <>
       {/* Emi as background */}
       <div className="emi-main">
-        <Emi />
+        <Emi isNewUser={isNewUser} isTodayFirstEnter={isTodayFirstEnter} />
       </div>
       <div className="isolate flex h-full justify-between p-4 max-md:flex-col md:px-8">
         {/* Brand & GoalsContentWrapper menu only show on desktop */}

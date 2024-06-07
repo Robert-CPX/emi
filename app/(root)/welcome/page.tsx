@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react"
 import { useRouter } from 'next/navigation'
 import { SignedIn } from "@clerk/nextjs"
 import Link from "next/link";
+import { NEW_USER } from "@/constants/constants";
 
 const Page = () => {
   const router = useRouter()
@@ -26,6 +27,8 @@ const Page = () => {
     videoRef.current.play().catch((error) => {
       console.error('Error attempting to play video:', error);
     });
+    // mark user as new as they are on the welcome page
+    sessionStorage.setItem(NEW_USER, 'true')
   }, [])
 
   useEffect(() => {

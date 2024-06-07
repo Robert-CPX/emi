@@ -8,6 +8,7 @@ export type User = {
   password?: string;
   profilePic: string;
   joinedAt: Date;
+  lastActiveAt: Date;
 } | Document;
 
 const UserSchema = new Schema<User>({
@@ -18,6 +19,7 @@ const UserSchema = new Schema<User>({
   profilePic: { type: String, required: true },
   password: String,
   joinedAt: { type: Date, default: Date.now },
+  lastActiveAt: { type: Date, default: Date.now },
 });
 
 const UserModel = models.User || model<User>('User', UserSchema);
