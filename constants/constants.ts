@@ -29,6 +29,7 @@ export const EMI_RESOURCES = {
 export const EMI_ANIMATIONS: { [key: string]: { idle: string, gestures: string[] } } = {
   DEFAULT: { idle: "idle.vrma", gestures: [] },
   INTRO: { idle: "Intro.vrma", gestures: [] },
+  LOGIN: { idle: "waku.vrma", gestures: [] },
   WRITING: { idle: "writing.vrma", gestures: [] },
   AFFECTION: { idle: "idle.vrma", gestures: ["talk1.vrma", "talk2.vrma"] },
   ANGER: { idle: "angry.vrma", gestures: ["angrypoint.vrma", "standing_arguing.vrma"] },
@@ -50,7 +51,7 @@ export const EMI_ANIMATIONS: { [key: string]: { idle: string, gestures: string[]
   WHINING: { idle: "idle_sad.vrma", gestures: ["talk1.vrma"] },
 }
 
-export const EMI_CLICK_AREA: { [area: string]: { animation: string, meshes: string[] } } = {
+export const EMI_CLICK_AREA: { [area: string]: { animation: string, meshes: string[], voiceline: string } } = {
   HEAD: { animation: "click3.vrma", 
   meshes: ["Hair", 
   "Face_(merged)baked_custom_1", 
@@ -59,10 +60,11 @@ export const EMI_CLICK_AREA: { [area: string]: { animation: string, meshes: stri
   "Face_(merged)baked_custom_4",
   "Face_(merged)baked_custom_5",
   "Face_(merged)baked_custom_6",
-  "Face_(merged)baked_custom_6" ] },
+  "Face_(merged)baked_custom_6" ],
+  voiceline: "assets/audio/click_head.wav" },
   
-  CHEST: { animation: "clickchest2.vrma", meshes: ["N00_007_02_Tops_01_CLOTH_(Instance)", "外套"] },
-  OTHER: { animation: "clickchest2.vrma", meshes: [] }
+  CHEST: { animation: "clickchest2.vrma", meshes: ["N00_007_02_Tops_01_CLOTH_(Instance)", "外套"], voiceline: "assets/audio/click_chest.wav" },
+  OTHER: { animation: "clickchest2.vrma", meshes: [], voiceline: "assets/audio/click_chest.wav"  }
 }
 
 export const AUDIO_RESOURCES = {
@@ -71,7 +73,10 @@ export const AUDIO_RESOURCES = {
   CLICK_SOUND: "assets/audio/bong_001.ogg",
   CLICK_CHARACTER_SOUND: "assets/audio/select_006.ogg",
   MESSAGE_SOUND: "assets/audio/message.ogg",
-  HOVER_SOUND: "assets/audio/click.wav"
+  HOVER_SOUND: "assets/audio/click.wav",
+  ONBOARDING_DIALOGUE: "assets/audio/onboarding.wav",
+  LOGIN_FIRST: "assets/audio/login_first.wav",
+  LOGIN: "assets/audio/login.wav"
 }
 
 export const EMOJIS: { [key: string]: string[] } = {

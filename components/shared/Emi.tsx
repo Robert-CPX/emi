@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -26,16 +26,18 @@ const Emi = (props: EmiProps) => {
   const gltfLoaderRef = useRef<GLTFLoader>(new GLTFLoader());  // Ref for GLTFLoader
   const mainAnimationRef = useRef<THREE.AnimationAction | null>(null);
   const clockRef = useRef<THREE.Clock | null>(null);
-  const { mode, emotion, isSpeaking } = useEmi();
+  const { mode, emotion, isSpeaking, setIsSpeaking } = useEmi();
 
   const speakAnimationRef = useRef<THREE.AnimationAction | null>(null);
+  const blinkAnimationRef = useRef<THREE.AnimationAction | null>(null);
 
   const uninterruptibleRef = useRef<boolean>(false); // if is playing an uninterruptible animation
-
+  const hasGreetedRef = useRef<boolean>(false);
+  const [initFinished, setInitFinished] = useState(false)
   // scene objects
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
-
+  const backgroundTextureRef = useRef<THREE.Texture | null>(null);
   // constants
   const focusModeCameraPositionRef = useRef<[number, number, number]>([0, 1.3, 2.4]);
   const focusModeCameraTargetRef = useRef<[number, number, number]>([0, 0.5, 0]);
@@ -43,34 +45,41 @@ const Emi = (props: EmiProps) => {
   const companionModeCameraTargetRef = useRef<[number, number, number]>([0, 1.2, 0]);
   const focusLayerIdxRef = useRef<number>(1);
 
+  // for playing login animations
   useEffect(() => {
-    console.log("isNewUser: ", isNewUser, "isTodayFirstEnter: ", isTodayFirstEnter)
-  }, [isNewUser, isTodayFirstEnter])
+    if (hasGreetedRef.current || !initFinished) return;
+    // console.log("isNewUser: ", isNewUser, "isTodayFirstEnter: ", isTodayFirstEnter)
+    if(isNewUser){
+      playInteractAnimation(AUDIO_RESOURCES.ONBOARDING_DIALOGUE, EMI_ANIMATIONS.INTRO.idle, true);
+    } else if(isTodayFirstEnter){
+      playInteractAnimation(AUDIO_RESOURCES.LOGIN_FIRST, EMI_ANIMATIONS.LOGIN.idle, true);
+    } else {
+      playInteractAnimation(AUDIO_RESOURCES.LOGIN, EMI_ANIMATIONS.LOGIN.idle, true);
+    }
+  }, [isNewUser, isTodayFirstEnter, initFinished])
 
   useEffect(() => {
-    if (!mode) return;
-    console.log(mode);
-
+    if (!mode || !hasGreetedRef.current || !initFinished) return;
     if (mode === "focus") {
       cameraRef.current?.layers.enable(1);
       cameraRef.current?.position.set(...focusModeCameraPositionRef.current);
       controlsRef.current?.target.set(...focusModeCameraTargetRef.current);
       uninterruptibleRef.current = false;
-      loadAndPlayAnimation(EMI_ANIMATIONS.WRITING.idle, true, 0.3);
+      loadAndPlayAnimation({filename:EMI_ANIMATIONS.WRITING.idle, shouldLoop:true, fadeDuration: 0.3});
       uninterruptibleRef.current = true;
     } else if (mode === "companion") {
       cameraRef.current?.layers.disable(1);
       cameraRef.current?.position.set(...companionModeCameraPositionRef.current);
       controlsRef.current?.target.set(...companionModeCameraTargetRef.current);
       uninterruptibleRef.current = false;
-      loadAndPlayAnimation(EMI_ANIMATIONS.DEFAULT.idle, true, 0.3);
+      loadAndPlayAnimation({filename:EMI_ANIMATIONS.DEFAULT.idle, shouldLoop:true, fadeDuration: 0.3});
     }
-  }, [mode]);
+  }, [mode, initFinished]);
 
   useEffect(() => {
     if (!emotion) return;
     const animation = getAnimation(emotion);
-    console.log("Current Emotion: " + emotion.behavior.code)
+    // console.log("Current Emotion: " + emotion.behavior.code)
 
     if (!mixerRef.current) {
       throw new Error('mixerRef.current is not found.');
@@ -79,15 +88,15 @@ const Emi = (props: EmiProps) => {
     // play random gesture if there is one
     if (animation.gestures.length > 0) {
       const randIdx = Math.floor(Math.random() * animation.gestures.length);
-      loadAndPlayAnimation(animation.gestures[randIdx], false);
+      loadAndPlayAnimation({filename: animation.gestures[randIdx], shouldLoop: false});
       const onFinished = () => {
         if (!mixerRef.current) return; // Check for null
         mixerRef.current.removeEventListener('finished', onFinished); // Clean up the listener
-        loadAndPlayAnimation(animation.idle); // Play idle animation in loop
+        loadAndPlayAnimation({filename: animation.idle}); // Play idle animation in loop
       };
       mixerRef.current.addEventListener('finished', onFinished);
     } else {
-      loadAndPlayAnimation(animation.idle);
+      loadAndPlayAnimation({filename: animation.idle});
     }
   }, [emotion]);
 
@@ -104,10 +113,26 @@ const Emi = (props: EmiProps) => {
 
     // load background image
     const loader = new THREE.TextureLoader();
-    loader.load(EMI_RESOURCES.background, function (texture) {
+    loader.load(EMI_RESOURCES.background, function(texture) {
       texture.minFilter = THREE.LinearFilter;
       scene.background = texture;
+      backgroundTextureRef.current = texture;
     });
+  
+    function updateBackground(): void {
+      // When factor larger than 1, that means texture 'wilder' than target。 
+      // we should scale texture height to target height and then 'map' the center  of texture to target， and vice versa.
+      const targetAspect =  window.innerWidth / window.innerHeight;
+      const imageAspect = backgroundTextureRef.current?.image.width  / backgroundTextureRef.current?.image.height;
+      const factor = imageAspect / targetAspect;
+      if (scene.background  instanceof THREE.Texture){
+        scene.background.offset.x = factor > 1 ? (1 - 1 / factor) / 2 : 0;
+        scene.background.repeat.x = factor > 1 ? 1 / factor : 1;
+        scene.background.offset.y = factor > 1 ? 0 : (1 - factor) / 2;
+        scene.background.repeat.y = factor > 1 ? 1 : factor;
+      }
+    }
+    
 
     const camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 1000);
     cameraRef.current = camera;
@@ -149,7 +174,7 @@ const Emi = (props: EmiProps) => {
       mixerRef.current = new THREE.AnimationMixer(vrm.scene);
       clockRef.current = new THREE.Clock();
 
-      loadAndPlayAnimation(EMI_ANIMATIONS.DEFAULT.idle);
+      // loadAndPlayAnimation({filename: EMI_ANIMATIONS.LOGIN.idle, shouldLoop: false, uninterruptible: true});
 
       //setup speak animation
       const speak_interval = 0
@@ -158,8 +183,18 @@ const Emi = (props: EmiProps) => {
         [0.0, 0.2, 0.4, speak_interval], // times
         [0.0, 0.3, 0.0, 0.0] // values
       );
-      const clip = new THREE.AnimationClip('Animation', 0.4 + speak_interval, [speakTrack]);
-      speakAnimationRef.current = mixerRef.current?.clipAction(clip)
+      let clip = new THREE.AnimationClip( 'Animation', 0.4 + speak_interval, [ speakTrack ] );
+      speakAnimationRef.current = mixerRef.current?.clipAction( clip )
+
+      const blinkInterval = 2 
+      const blinkTrack = new THREE.NumberKeyframeTrack(
+        vrm.expressionManager.getExpressionTrackName( 'blink' ), // name
+        [ 0.0, 0.05, 0.1,  blinkInterval], // times
+        [ 0.0, 1.0, 0.0, 0 ] // values
+      );
+      clip = new THREE.AnimationClip( 'Animation', 0.1 + blinkInterval, [ blinkTrack ] );
+      blinkAnimationRef.current = mixerRef.current?.clipAction( clip )
+      blinkAnimationRef.current?.play();
 
       async function loadModel(resource: string, layer: number = 0): Promise<THREE.Group> {
         const gltf = await gltfLoaderRef.current.loadAsync(resource);
@@ -192,11 +227,13 @@ const Emi = (props: EmiProps) => {
         renderer.render(scene, camera);
       };
       renderer.setAnimationLoop(animate);
+      setInitFinished(true);
     };
 
     initVRMScene();
-
+    
     const handleResize = () => {
+      updateBackground();
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
@@ -230,24 +267,18 @@ const Emi = (props: EmiProps) => {
 
     const handleBodyPartClick = (object: THREE.Object3D) => {
       let animation = undefined;
+      let voiceline = undefined;
       for (const area in EMI_CLICK_AREA) {
         if (EMI_CLICK_AREA[area].meshes.includes(object.name)) {
           animation = EMI_CLICK_AREA[area].animation;
+          voiceline = EMI_CLICK_AREA[area].voiceline;
         }
       }
-      if (!animation) {
+      if (!animation || ! voiceline){
         animation = EMI_CLICK_AREA.OTHER.animation;
+        voiceline = EMI_CLICK_AREA.OTHER.voiceline;
       }
-
-      const onFinished = () => {
-        if (!mixerRef.current) return; // Check for null
-        mixerRef.current.removeEventListener('finished', onFinished); // Clean up the listener
-        uninterruptibleRef.current = false;
-        loadAndPlayAnimation(EMI_ANIMATIONS.DEFENSIVENESS.idle); // Play idle animation in loop
-      };
-      mixerRef.current?.addEventListener('finished', onFinished);
-      loadAndPlayAnimation(animation, false)
-      uninterruptibleRef.current = true;
+      playInteractAnimation(voiceline, animation, false, EMI_ANIMATIONS.DEFENSIVENESS.idle)
     }
 
     return () => {
@@ -258,8 +289,21 @@ const Emi = (props: EmiProps) => {
     };
   }, []);
 
-  const loadAndPlayAnimation = async (filename: string, shouldLoop = true, fadeDuration = 0.5) => {
-    if (uninterruptibleRef.current) return;
+
+  type LoadAndPlayAnimationParams = {
+    filename: string;
+    shouldLoop?: boolean;
+    fadeDuration?: number;
+    uninterruptible?: boolean;
+  };
+
+  const loadAndPlayAnimation = async ({
+    filename,
+    shouldLoop = true,
+    fadeDuration = 0.5,
+    uninterruptible = false
+  }: LoadAndPlayAnimationParams)  => {
+    if (uninterruptibleRef.current) return; // if current animation cannot be interrupted, skip loading new animation
     const fullPath = EMI_RESOURCES.emotionPath + filename;
     console.log("playing animation " + fullPath);
     if (!mixerRef.current) return;
@@ -284,8 +328,25 @@ const Emi = (props: EmiProps) => {
       newAction.play();
     }
     mainAnimationRef.current = newAction;
+    if (uninterruptible) {
+      uninterruptibleRef.current = true;
+    }
   };
 
+  const playInteractAnimation = async (soundFileName: string, animationFileName: string, setGreetFinished = false,  finishAnimation: string = EMI_ANIMATIONS.JOY.idle) => {
+    if (uninterruptibleRef.current) return;
+    loadAndPlayAnimation({filename: animationFileName, shouldLoop: false, uninterruptible: true});
+    setIsSpeaking(true);
+    playSound(soundFileName, () => {
+      uninterruptibleRef.current = false;
+      loadAndPlayAnimation({filename: finishAnimation});
+      setIsSpeaking(false);
+      if (setGreetFinished){
+        hasGreetedRef.current = true;
+      }
+    });
+  }
+  
   return <div ref={mountRef} />;
 };
 

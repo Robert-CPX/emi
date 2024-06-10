@@ -100,8 +100,11 @@ export function getEmoji(behavior: EmotionBehavior): string | null {
     : emoji[Math.floor(Math.random() * emoji.length)];
 }
 
-export const playSound = (url: string) => {
+export const playSound = (url: string, onEnd?: () => void) => {
   const audio = new Audio(url);
+  if (onEnd) {
+    audio.addEventListener('ended', onEnd);
+  }
   audio.play();
 };
 
