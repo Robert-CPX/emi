@@ -28,6 +28,7 @@ export const EMI_RESOURCES = {
 
 export const EMI_ANIMATIONS: { [key: string]: { idle: string, gestures: string[] } } = {
   DEFAULT: { idle: "idle.vrma", gestures: [] },
+  IDLE: { idle: "thinking.vrma", gestures: ["thinking.vrma", "bashful.vrma", "happy.vrma", "stretch.vrma"] },
   INTRO: { idle: "Intro.vrma", gestures: [] },
   LOGIN: { idle: "waku.vrma", gestures: [] },
   WRITING: { idle: "writing.vrma", gestures: [] },
@@ -67,6 +68,16 @@ export const EMI_CLICK_AREA: { [area: string]: { animation: string, meshes: stri
   OTHER: { animation: "clickchest2.vrma", meshes: [], voiceline: "assets/audio/click_chest.wav"  }
 }
 
+export const EMI_MATERIAL_NAME = {
+  FACE: "N00_000_00_Face_00_SKIN (Instance).001", 
+  FACE_OUTLINE: "N00_000_00_Face_00_SKIN (Instance).001 (Outline)", 
+  BODY: "N00_000_00_Body_00_SKIN (Instance)", 
+  BODY_OUTLINE: "N00_000_00_Body_00_SKIN (Instance) (Outline)", 
+  HAIR: "N00_000_Hair_00_HAIR (Instance)", 
+  CLOTHES: "材质.001", 
+  SKIRT: "N00_001_03_Bottoms_01_CLOTH (Instance)"
+}
+
 export const AUDIO_RESOURCES = {
   BGM_DEFAULT: "assets/audio/BGM.wav",
   BGM_FOCUS: "assets/audio/BGM_focus.mp3",
@@ -76,7 +87,8 @@ export const AUDIO_RESOURCES = {
   HOVER_SOUND: "assets/audio/click.wav",
   ONBOARDING_DIALOGUE: "assets/audio/onboarding.wav",
   LOGIN_FIRST: "assets/audio/login_first.wav",
-  LOGIN: "assets/audio/login.wav"
+  LOGIN: "assets/audio/login.wav",
+  IDLE: "assets/audio/idle.wav"
 }
 
 export const EMOJIS: { [key: string]: string[] } = {

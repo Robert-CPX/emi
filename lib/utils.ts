@@ -100,12 +100,28 @@ export function getEmoji(behavior: EmotionBehavior): string | null {
     : emoji[Math.floor(Math.random() * emoji.length)];
 }
 
-export const playSound = (url: string, onEnd?: () => void) => {
+export type SoundControl = {
+  stop: () => void;
+};
+
+export const playSound = (url: string, onEnd?: () => void): SoundControl => {
   const audio = new Audio(url);
+  
   if (onEnd) {
     audio.addEventListener('ended', onEnd);
   }
+
   audio.play();
+
+  const stop = () => {
+    audio.pause();
+    audio.currentTime = 0;
+    if (onEnd) {
+      audio.removeEventListener('ended', onEnd);
+    }
+  };
+
+  return { stop };
 };
 
 export const formatGoalDurationTime = (seconds: number): string => {

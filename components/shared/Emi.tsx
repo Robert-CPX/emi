@@ -8,9 +8,9 @@ import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
 import { createVRMAnimationClip, VRMAnimationLoaderPlugin, VRMLookAtQuaternionProxy } from '@pixiv/three-vrm-animation';
 import { useEmi } from '@/context/EmiProvider';
 import { getAnimation } from '@/lib/utils';
-import { EMI_RESOURCES, EMI_ANIMATIONS, EMI_CLICK_AREA } from '@/constants/constants';
+import { EMI_RESOURCES, EMI_ANIMATIONS, EMI_CLICK_AREA, EMI_MATERIAL_NAME } from '@/constants/constants';
 
-import { playSound } from "@/lib/utils"
+import { playSound, SoundControl } from "@/lib/utils"
 import { AUDIO_RESOURCES } from "@/constants/constants"
 
 interface EmiProps {
@@ -31,9 +31,17 @@ const Emi = (props: EmiProps) => {
   const speakAnimationRef = useRef<THREE.AnimationAction | null>(null);
   const blinkAnimationRef = useRef<THREE.AnimationAction | null>(null);
 
-  const uninterruptibleRef = useRef<boolean>(false); // if is playing an uninterruptible animation
+  const idleAnimationFileNameRef  = useRef<string | null>(null);
+  const lastPlayedGestureRef   = useRef<THREE.AnimationAction | null>(null);
+
   const hasGreetedRef = useRef<boolean>(false);
   const [initFinished, setInitFinished] = useState(false)
+  const soundRef = useRef<SoundControl|undefined>(undefined)
+  const [lastInteractionTime, setLastInteractionTime] = React.useState(Date.now());
+  const idleTime = 10000;
+  const canClickRef = useRef<boolean>(true);
+  const canPlayIdleAnimRef = useRef<boolean>(true);
+
   // scene objects
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
@@ -45,61 +53,102 @@ const Emi = (props: EmiProps) => {
   const companionModeCameraTargetRef = useRef<[number, number, number]>([0, 1.2, 0]);
   const focusLayerIdxRef = useRef<number>(1);
 
+  const matparams = {
+    shadingToonyFactor: 0.65,
+    shadingShiftFactor: -0.2,
+  
+    shadeColorFactorR: 1,
+    shadeColorFactorG: 1,
+    shadeColorFactorB: 1,
+  
+    parametricRimColorFactorR: 0.453,
+    parametricRimColorFactorG: 0.237,
+    parametricRimColorFactorB: 0.113,
+  
+    parametricRimFresnelPowerFactor: 18.6,
+    parametricRimLiftFactor: 0.3,
+    rimLightingMixFactor: 0.3,
+  
+    skinOutlineColorFactorR: 0.663,
+    skinOutlineColorFactorG: 0.193,
+    skinOutlineColorFactorB: 0.149,
+  };
+
   // for playing login animations
   useEffect(() => {
     if (hasGreetedRef.current || !initFinished) return;
-    // console.log("isNewUser: ", isNewUser, "isTodayFirstEnter: ", isTodayFirstEnter)
+    const onFinishGreet = () => {
+      hasGreetedRef.current = true;
+      loadAndPlayAnimation({filename: EMI_ANIMATIONS.JOY.idle, animationType:AnimationType.Idle});
+    };
+    
     if(isNewUser){
-      playInteractAnimation(AUDIO_RESOURCES.ONBOARDING_DIALOGUE, EMI_ANIMATIONS.INTRO.idle, true);
+      loadAndPlayAnimation({filename: EMI_ANIMATIONS.INTRO.idle, animationType: AnimationType.Gesture, soundFile: AUDIO_RESOURCES.ONBOARDING_DIALOGUE,
+        onFinish: onFinishGreet });
     } else if(isTodayFirstEnter){
-      playInteractAnimation(AUDIO_RESOURCES.LOGIN_FIRST, EMI_ANIMATIONS.LOGIN.idle, true);
+      loadAndPlayAnimation({filename: EMI_ANIMATIONS.LOGIN.idle, animationType: AnimationType.Gesture, soundFile: AUDIO_RESOURCES.LOGIN_FIRST, 
+        onFinish: onFinishGreet });
     } else {
-      playInteractAnimation(AUDIO_RESOURCES.LOGIN, EMI_ANIMATIONS.LOGIN.idle, true);
+      loadAndPlayAnimation({filename: EMI_ANIMATIONS.LOGIN.idle, animationType: AnimationType.Gesture, soundFile: AUDIO_RESOURCES.LOGIN, 
+        onFinish: onFinishGreet });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isNewUser, isTodayFirstEnter, initFinished])
 
+  // for playing idle animations
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (Date.now() - lastInteractionTime >= idleTime) {
+        const randIdx = Math.floor(Math.random() * EMI_ANIMATIONS.IDLE.gestures.length);
+        if (canPlayIdleAnimRef.current) {
+          loadAndPlayAnimation({filename: EMI_ANIMATIONS.IDLE.gestures[randIdx], animationType: AnimationType.Gesture});
+        }
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastInteractionTime]);
+
+  // for changing modes
   useEffect(() => {
     if (!mode || !hasGreetedRef.current || !initFinished) return;
     if (mode === "focus") {
       cameraRef.current?.layers.enable(1);
       cameraRef.current?.position.set(...focusModeCameraPositionRef.current);
       controlsRef.current?.target.set(...focusModeCameraTargetRef.current);
-      uninterruptibleRef.current = false;
-      loadAndPlayAnimation({filename:EMI_ANIMATIONS.WRITING.idle, shouldLoop:true, fadeDuration: 0.3});
-      uninterruptibleRef.current = true;
+      loadAndPlayAnimation({filename:EMI_ANIMATIONS.WRITING.idle, animationType: AnimationType.Idle, fadeDuration: 0.3, override: true});
+      canClickRef.current = false;
+      canPlayIdleAnimRef.current = false;
     } else if (mode === "companion") {
       cameraRef.current?.layers.disable(1);
       cameraRef.current?.position.set(...companionModeCameraPositionRef.current);
       controlsRef.current?.target.set(...companionModeCameraTargetRef.current);
-      uninterruptibleRef.current = false;
-      loadAndPlayAnimation({filename:EMI_ANIMATIONS.DEFAULT.idle, shouldLoop:true, fadeDuration: 0.3});
+      loadAndPlayAnimation({filename:EMI_ANIMATIONS.DEFAULT.idle, animationType: AnimationType.Idle, fadeDuration: 0.3, override: true});
+      canClickRef.current = true;
+      canPlayIdleAnimRef.current = true;
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, initFinished]);
 
+  // for changing emotions
   useEffect(() => {
     if (!emotion) return;
     const animation = getAnimation(emotion);
-    // console.log("Current Emotion: " + emotion.behavior.code)
-
-    if (!mixerRef.current) {
-      throw new Error('mixerRef.current is not found.');
-    }
 
     // play random gesture if there is one
     if (animation.gestures.length > 0) {
       const randIdx = Math.floor(Math.random() * animation.gestures.length);
-      loadAndPlayAnimation({filename: animation.gestures[randIdx], shouldLoop: false});
-      const onFinished = () => {
-        if (!mixerRef.current) return; // Check for null
-        mixerRef.current.removeEventListener('finished', onFinished); // Clean up the listener
-        loadAndPlayAnimation({filename: animation.idle}); // Play idle animation in loop
-      };
-      mixerRef.current.addEventListener('finished', onFinished);
+      loadAndPlayAnimation({filename: animation.gestures[randIdx], animationType: AnimationType.Gesture,
+        onFinish: () => loadAndPlayAnimation({filename: animation.idle, animationType:AnimationType.Idle})
+      });
     } else {
-      loadAndPlayAnimation({filename: animation.idle});
+      loadAndPlayAnimation({filename: animation.idle, animationType: AnimationType.Idle});
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [emotion]);
 
+  // for speak animation
   useEffect(() => {
     if (isSpeaking) {
       speakAnimationRef.current?.play();
@@ -108,6 +157,7 @@ const Emi = (props: EmiProps) => {
     }
   }, [isSpeaking]);
 
+  // Initialization
   useEffect(() => {
     const scene = new THREE.Scene();
 
@@ -117,6 +167,7 @@ const Emi = (props: EmiProps) => {
       texture.minFilter = THREE.LinearFilter;
       scene.background = texture;
       backgroundTextureRef.current = texture;
+      updateBackground();
     });
   
     function updateBackground(): void {
@@ -132,7 +183,6 @@ const Emi = (props: EmiProps) => {
         scene.background.repeat.y = factor > 1 ? 1 : factor;
       }
     }
-    
 
     const camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 1000);
     cameraRef.current = camera;
@@ -174,7 +224,53 @@ const Emi = (props: EmiProps) => {
       mixerRef.current = new THREE.AnimationMixer(vrm.scene);
       clockRef.current = new THREE.Clock();
 
-      // loadAndPlayAnimation({filename: EMI_ANIMATIONS.LOGIN.idle, shouldLoop: false, uninterruptible: true});
+      // override material properties
+      const mtoonMaterials = gltfVrm.userData.vrmMToonMaterials;
+
+      for ( const material of mtoonMaterials ) {
+        if (material.name == EMI_MATERIAL_NAME.FACE){
+          material.uniforms.shadingToonyFactor.value = matparams.shadingToonyFactor;
+        }
+        else if (material.name == EMI_MATERIAL_NAME.HAIR){
+          material.uniforms.shadingToonyFactor.value = matparams.shadingToonyFactor;
+          material.uniforms.shadingShiftFactor.value = matparams.shadingShiftFactor;
+      
+          material.uniforms.parametricRimColorFactor.value.r = matparams.parametricRimColorFactorR;
+          material.uniforms.parametricRimColorFactor.value.g = matparams.parametricRimColorFactorG;
+          material.uniforms.parametricRimColorFactor.value.b = matparams.parametricRimColorFactorB;
+      
+      
+          material.uniforms.shadeColorFactor.value.r = matparams.shadeColorFactorR;
+          material.uniforms.shadeColorFactor.value.g = matparams.shadeColorFactorG;
+          material.uniforms.shadeColorFactor.value.b = matparams.shadeColorFactorB;
+      
+          material.uniforms.parametricRimFresnelPowerFactor.value = matparams.parametricRimFresnelPowerFactor;
+          material.uniforms.parametricRimLiftFactor.value = matparams.parametricRimLiftFactor;
+          material.uniforms.rimLightingMixFactor.value = matparams.rimLightingMixFactor;
+        }
+        else if (material.name == EMI_MATERIAL_NAME.FACE_OUTLINE){
+          material.uniforms.outlineColorFactor.value.r = matparams.skinOutlineColorFactorR;
+          material.uniforms.outlineColorFactor.value.g = matparams.skinOutlineColorFactorG;
+          material.uniforms.outlineColorFactor.value.b = matparams.skinOutlineColorFactorB;
+        }
+        else if (material.name == EMI_MATERIAL_NAME.BODY){
+          material.uniforms.shadingToonyFactor.value = matparams.shadingToonyFactor;
+          material.uniforms.shadingShiftFactor.value = matparams.shadingShiftFactor;
+        }
+        else if (material.name == EMI_MATERIAL_NAME.CLOTHES){
+          material.uniforms.shadingToonyFactor.value = matparams.shadingToonyFactor;
+          material.uniforms.shadingShiftFactor.value = matparams.shadingShiftFactor;
+        }
+        else if (material.name == EMI_MATERIAL_NAME.SKIRT){
+          material.uniforms.shadingToonyFactor.value = matparams.shadingToonyFactor;
+          material.uniforms.shadingShiftFactor.value = matparams.shadingShiftFactor;
+        }
+        else if (material.name == EMI_MATERIAL_NAME.BODY_OUTLINE){
+          material.uniforms.outlineColorFactor.value.r = matparams.skinOutlineColorFactorR;
+          material.uniforms.outlineColorFactor.value.g = matparams.skinOutlineColorFactorG;
+          material.uniforms.outlineColorFactor.value.b = matparams.skinOutlineColorFactorB;
+        }
+      }
 
       //setup speak animation
       const speak_interval = 0
@@ -230,15 +326,12 @@ const Emi = (props: EmiProps) => {
       setInitFinished(true);
     };
 
-    initVRMScene();
-    
     const handleResize = () => {
       updateBackground();
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     };
-
     window.addEventListener('resize', handleResize);
 
     // setup listener for click events
@@ -246,7 +339,7 @@ const Emi = (props: EmiProps) => {
     const mouse = new THREE.Vector2();
 
     const onMouseClick = (event: MouseEvent) => {
-      if (uninterruptibleRef.current) return;
+      if (!canClickRef.current || lastPlayedGestureRef.current?.isRunning()) return;
       // Calculate mouse position in normalized device coordinates
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -278,8 +371,10 @@ const Emi = (props: EmiProps) => {
         animation = EMI_CLICK_AREA.OTHER.animation;
         voiceline = EMI_CLICK_AREA.OTHER.voiceline;
       }
-      playInteractAnimation(voiceline, animation, false, EMI_ANIMATIONS.DEFENSIVENESS.idle)
+        loadAndPlayAnimation({filename: animation, animationType:AnimationType.Gesture, soundFile: voiceline})
     }
+
+    initVRMScene();
 
     return () => {
       window.removeEventListener('resize', handleResize);
@@ -287,26 +382,47 @@ const Emi = (props: EmiProps) => {
       mountRef.current?.removeChild(renderer.domElement);
       window.removeEventListener('click', onMouseClick, false);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  enum AnimationType {
+    Idle, // idle animations are looped and resumes playing after a gesture animation is finished
+    Gesture // gesture animations only plays once
+  }
 
   type LoadAndPlayAnimationParams = {
-    filename: string;
-    shouldLoop?: boolean;
+    filename: string; 
+    animationType: AnimationType;
     fadeDuration?: number;
-    uninterruptible?: boolean;
+    override?: boolean; // if should override the current animation
+    soundFile?: string;
+    onFinish?: Function;
   };
 
   const loadAndPlayAnimation = async ({
     filename,
-    shouldLoop = true,
+    animationType,
     fadeDuration = 0.5,
-    uninterruptible = false
+    override = false,
+    soundFile = undefined,
+    onFinish
   }: LoadAndPlayAnimationParams)  => {
-    if (uninterruptibleRef.current) return; // if current animation cannot be interrupted, skip loading new animation
+    // check if is overriding a gesture
+    // console.log("overriding a gesture " + !override && lastPlayedGestureRef.current && lastPlayedGestureRef.current.isRunning())
+    if (!override && lastPlayedGestureRef.current && lastPlayedGestureRef.current.isRunning()) return;
+
+    // stop previous animation sound
+    if (soundRef.current){
+      soundRef.current.stop();
+      setIsSpeaking(false);
+    }
+    setLastInteractionTime(Date.now());
+
     const fullPath = EMI_RESOURCES.emotionPath + filename;
     console.log("playing animation " + fullPath);
-    if (!mixerRef.current) return;
+    if (!mixerRef.current) {
+      throw new Error('mixerRef.current is not found.');
+    }
 
     const gltfVrma = await gltfLoaderRef.current.loadAsync(fullPath);
     const vrmAnimation = gltfVrma.userData.vrmAnimations[0];
@@ -315,7 +431,28 @@ const Emi = (props: EmiProps) => {
     // Create a new action for the new animation clip
     const newAction = mixerRef.current?.clipAction(clip);
     newAction.clampWhenFinished = true;
-    newAction.loop = shouldLoop ? THREE.LoopRepeat : THREE.LoopOnce;
+
+    // to transition from gesture back to idle
+    const onAnimationFinish = () => {
+      mixerRef.current?.removeEventListener('finished', onAnimationFinish); // Clean up the listener
+      setIsSpeaking(false);
+      if (idleAnimationFileNameRef.current){
+        loadAndPlayAnimation({filename: idleAnimationFileNameRef.current, animationType: AnimationType.Idle}); // resume idle animation
+      }
+      if (onFinish){
+        onFinish();
+      }
+    };
+    
+    // set up animation based on type
+    if (animationType == AnimationType.Idle){
+      idleAnimationFileNameRef.current = filename;
+      newAction.loop = THREE.LoopRepeat;
+    } else if (animationType == AnimationType.Gesture){
+      lastPlayedGestureRef.current = newAction;
+      newAction.loop = THREE.LoopOnce;
+      mixerRef.current?.addEventListener('finished', onAnimationFinish);
+    }
 
     // If there's a currently active action, fade it out
     if (mainAnimationRef.current) {
@@ -328,24 +465,16 @@ const Emi = (props: EmiProps) => {
       newAction.play();
     }
     mainAnimationRef.current = newAction;
-    if (uninterruptible) {
-      uninterruptibleRef.current = true;
-    }
-  };
 
-  const playInteractAnimation = async (soundFileName: string, animationFileName: string, setGreetFinished = false,  finishAnimation: string = EMI_ANIMATIONS.JOY.idle) => {
-    if (uninterruptibleRef.current) return;
-    loadAndPlayAnimation({filename: animationFileName, shouldLoop: false, uninterruptible: true});
-    setIsSpeaking(true);
-    playSound(soundFileName, () => {
-      uninterruptibleRef.current = false;
-      loadAndPlayAnimation({filename: finishAnimation});
-      setIsSpeaking(false);
-      if (setGreetFinished){
-        hasGreetedRef.current = true;
-      }
-    });
-  }
+    
+
+    // handle sound file
+    if (soundFile){
+      setIsSpeaking(true);
+      soundRef.current = playSound(soundFile);
+    }
+    
+  };
   
   return <div ref={mountRef} />;
 };
