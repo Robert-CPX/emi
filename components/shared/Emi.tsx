@@ -26,7 +26,7 @@ const Emi = (props: EmiProps) => {
   const gltfLoaderRef = useRef<GLTFLoader>(new GLTFLoader());  // Ref for GLTFLoader
   const mainAnimationRef = useRef<THREE.AnimationAction | null>(null);
   const clockRef = useRef<THREE.Clock | null>(null);
-  const { mode, emotion, isSpeaking, setIsSpeaking } = useEmi();
+  const { mode, emotion, isSpeaking, goalCreated, setIsSpeaking, setGoalCreated } = useEmi();
 
   const speakAnimationRef = useRef<THREE.AnimationAction | null>(null);
   const blinkAnimationRef = useRef<THREE.AnimationAction | null>(null);
@@ -73,6 +73,19 @@ const Emi = (props: EmiProps) => {
     skinOutlineColorFactorG: 0.193,
     skinOutlineColorFactorB: 0.149,
   };
+
+  // for playing goal created animations
+  useEffect(() => {
+    console.log("goal_created animation triggered " + goalCreated)
+    if (!goalCreated || !initFinished) return;
+    const onFinishGoalReaction = () => {
+      setGoalCreated(false);
+    };
+    
+    loadAndPlayAnimation({filename: EMI_ANIMATIONS.LOGIN.idle, animationType: AnimationType.Gesture, soundFile: AUDIO_RESOURCES.GOAL_CREATED, override:true, 
+      onFinish: onFinishGoalReaction });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [goalCreated])
 
   // for playing login animations
   useEffect(() => {
@@ -410,8 +423,7 @@ const Emi = (props: EmiProps) => {
     // check if is overriding a gesture
     // console.log("overriding a gesture " + !override && lastPlayedGestureRef.current && lastPlayedGestureRef.current.isRunning())
     if (!override && lastPlayedGestureRef.current && lastPlayedGestureRef.current.isRunning()) return;
-
-    // stop previous animation sound
+    
     if (soundRef.current){
       soundRef.current.stop();
       setIsSpeaking(false);
@@ -449,6 +461,7 @@ const Emi = (props: EmiProps) => {
       idleAnimationFileNameRef.current = filename;
       newAction.loop = THREE.LoopRepeat;
     } else if (animationType == AnimationType.Gesture){
+      // stop previous animation sound
       lastPlayedGestureRef.current = newAction;
       newAction.loop = THREE.LoopOnce;
       mixerRef.current?.addEventListener('finished', onAnimationFinish);

@@ -21,6 +21,7 @@ import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
 import Link from "next/link";
 import { createGoal, getGoalById, updateGoal } from '@/lib/actions/goal.actions';
+import { useEmi } from '@/context/EmiProvider';
 
 type GoalFormProps = {
   clerkId: string;
@@ -36,6 +37,8 @@ const GoalForm = ({
   const pathname = usePathname()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
+
+  const { setGoalCreated: setEmiGoalCreated } = useEmi();
 
   const form = useForm<z.infer<typeof EditGoalSchema>>({
     resolver: zodResolver(EditGoalSchema),
@@ -66,6 +69,7 @@ const GoalForm = ({
         await createGoal({ title: values.title, description: values.description, duration: 0, userId: clerkId, path: pathname, isLongTerm })
       }
       router.push(pathname)
+      setEmiGoalCreated(true);
       const description = editGoal ? 'Goal updated successfully' : 'A new goal added successfully'
       toast({ description })
     } catch (error) {
