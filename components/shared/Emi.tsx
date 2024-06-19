@@ -77,7 +77,6 @@ const Emi = (props: EmiProps) => {
   };
 
   // for playing focus finished animations
-  // TODO refactor repeated code
   useEffect(() => {
     if (!focusFinished || !initFinished) return;
     const onFinishFocusReaction = () => {
@@ -95,6 +94,7 @@ const Emi = (props: EmiProps) => {
     if (!goalCreated || !initFinished) return;
     const onFinishGoalReaction = () => {
       setGoalCreated(false);
+      loadAndPlayAnimation({filename: EMI_ANIMATIONS.JOY.idle, animationType:AnimationType.Idle});
     };
     
     loadAndPlayAnimation({filename: EMI_ANIMATIONS.LOGIN.idle, animationType: AnimationType.Gesture, soundFile: AUDIO_RESOURCES.GOAL_CREATED, override:true, 
