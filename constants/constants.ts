@@ -89,7 +89,8 @@ export const AUDIO_RESOURCES = {
   LOGIN_FIRST: "assets/audio/login_first.wav",
   LOGIN: "assets/audio/login.wav",
   IDLE: "assets/audio/idle.wav",
-  GOAL_CREATED: "assets/audio/goal_created.mp3"
+  GOAL_CREATED: "assets/audio/goal_created.mp3",
+  FOCUS_FINISH: "assets/audio/focus_finish.mp3",
 }
 
 export const EMOJIS: { [key: string]: string[] } = {

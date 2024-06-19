@@ -24,7 +24,7 @@ const GoalsContentWrapper = () => {
       >
         <Image src="/assets/icons/goals-solid.svg" width={32} height={32} alt="Goal Menu Icon" />
       </Button>
-      <div className='absolute flex w-[730px] gap-2'>
+      <div id="emi-canvas" className='absolute flex w-[730px] gap-2'>
         {isOpen && (
           <div className='relative h-[680px] w-[360px]'>
             <GoalsContent

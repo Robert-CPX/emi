@@ -22,7 +22,7 @@ const Home = () => {
   const [isTodayFirstEnter, setIsTodayFirstEnter] = useState(false)
   const [isNewUser, setIsNewUser] = useState(false)
 
-  const { mode } = useEmi()
+  const { mode, setFocusFinished } = useEmi()
 
   useEffect(() => {
     setIsNewUser(sessionStorage.getItem(NEW_USER) === 'true')
@@ -52,9 +52,11 @@ const Home = () => {
 
   useEffect(() => {
     if (mode === 'cheer') {
+      setFocusFinished(true)
+      
       redirect("/cheer")
     }
-  }, [mode])
+  }, [mode, setFocusFinished])
 
   return (
     <>
@@ -62,14 +64,14 @@ const Home = () => {
       <div className="emi-main">
         <Emi isNewUser={isNewUser} isTodayFirstEnter={isTodayFirstEnter} />
       </div>
-      <div className="isolate flex h-full justify-between p-4 max-md:flex-col md:px-8">
+      <div id="emi-canvas" className="isolate flex h-full justify-between p-4 max-md:flex-col md:px-8">
         {/* Brand & GoalsContentWrapper menu only show on desktop */}
         <section className="flex flex-col items-start justify-start gap-4">
           <BrandMenu />
           <GoalsContentWrapper />
         </section>
         {/* this section is on top */}
-        <section className="z-10 flex flex-col items-center justify-start gap-4">
+        <section id="emi-canvas" className="z-10 flex flex-col items-center justify-start gap-4">
           {/* Mode Tabs disappear only when timer is running */}
           <ModeTabs />
           {(mode === 'companion' && unarchivedGoalExist) && (

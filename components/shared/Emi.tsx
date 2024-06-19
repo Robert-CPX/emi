@@ -26,7 +26,9 @@ const Emi = (props: EmiProps) => {
   const gltfLoaderRef = useRef<GLTFLoader>(new GLTFLoader());  // Ref for GLTFLoader
   const mainAnimationRef = useRef<THREE.AnimationAction | null>(null);
   const clockRef = useRef<THREE.Clock | null>(null);
-  const { mode, emotion, isSpeaking, goalCreated, setIsSpeaking, setGoalCreated } = useEmi();
+  const { mode, emotion, isSpeaking, goalCreated, setIsSpeaking, setGoalCreated,
+    focusFinished, setFocusFinished, hasGreeted, setHasGreeted
+   } = useEmi();
 
   const speakAnimationRef = useRef<THREE.AnimationAction | null>(null);
   const blinkAnimationRef = useRef<THREE.AnimationAction | null>(null);
@@ -34,13 +36,13 @@ const Emi = (props: EmiProps) => {
   const idleAnimationFileNameRef  = useRef<string | null>(null);
   const lastPlayedGestureRef   = useRef<THREE.AnimationAction | null>(null);
 
-  const hasGreetedRef = useRef<boolean>(false);
   const [initFinished, setInitFinished] = useState(false)
   const soundRef = useRef<SoundControl|undefined>(undefined)
   const [lastInteractionTime, setLastInteractionTime] = React.useState(Date.now());
   const idleTime = 10000;
   const canClickRef = useRef<boolean>(true);
   const canPlayIdleAnimRef = useRef<boolean>(true);
+  const isModeFirstUpdate = useRef<boolean>(true);
 
   // scene objects
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -74,9 +76,22 @@ const Emi = (props: EmiProps) => {
     skinOutlineColorFactorB: 0.149,
   };
 
+  // for playing focus finished animations
+  // TODO refactor repeated code
+  useEffect(() => {
+    if (!focusFinished || !initFinished) return;
+    const onFinishFocusReaction = () => {
+      setFocusFinished(false);
+      loadAndPlayAnimation({filename: EMI_ANIMATIONS.JOY.idle, animationType:AnimationType.Idle});
+    };
+    
+    loadAndPlayAnimation({filename: EMI_ANIMATIONS.LOGIN.idle, animationType: AnimationType.Gesture, soundFile: AUDIO_RESOURCES.FOCUS_FINISH, override:true, 
+      onFinish: onFinishFocusReaction });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusFinished, initFinished])
+
   // for playing goal created animations
   useEffect(() => {
-    console.log("goal_created animation triggered " + goalCreated)
     if (!goalCreated || !initFinished) return;
     const onFinishGoalReaction = () => {
       setGoalCreated(false);
@@ -85,13 +100,13 @@ const Emi = (props: EmiProps) => {
     loadAndPlayAnimation({filename: EMI_ANIMATIONS.LOGIN.idle, animationType: AnimationType.Gesture, soundFile: AUDIO_RESOURCES.GOAL_CREATED, override:true, 
       onFinish: onFinishGoalReaction });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [goalCreated])
+  }, [goalCreated, initFinished])
 
   // for playing login animations
   useEffect(() => {
-    if (hasGreetedRef.current || !initFinished) return;
+    if (hasGreeted || !initFinished) return;
     const onFinishGreet = () => {
-      hasGreetedRef.current = true;
+      setHasGreeted(true);
       loadAndPlayAnimation({filename: EMI_ANIMATIONS.JOY.idle, animationType:AnimationType.Idle});
     };
     
@@ -125,7 +140,11 @@ const Emi = (props: EmiProps) => {
 
   // for changing modes
   useEffect(() => {
-    if (!mode || !hasGreetedRef.current || !initFinished) return;
+    if (!mode || !initFinished) return;
+    if (isModeFirstUpdate.current) { // prevent mode update on page load from overriding greet animations
+      isModeFirstUpdate.current = false;
+      return;
+    }
     if (mode === "focus") {
       cameraRef.current?.layers.enable(1);
       cameraRef.current?.position.set(...focusModeCameraPositionRef.current);
@@ -141,6 +160,9 @@ const Emi = (props: EmiProps) => {
       canClickRef.current = true;
       canPlayIdleAnimRef.current = true;
     }
+    // return () => {
+    //   isModeFirstUpdate.current = true
+    // }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, initFinished]);
 
@@ -352,6 +374,13 @@ const Emi = (props: EmiProps) => {
     const mouse = new THREE.Vector2();
 
     const onMouseClick = (event: MouseEvent) => {
+      // detect if mouse click is on canvas
+      const validElements = document.querySelectorAll('#emi-canvas');
+      const validElementsArray = Array.from(validElements);
+      const targetElement = event.target as Element;
+      // console.log(targetElement)
+      if (targetElement && !validElementsArray.includes(targetElement)) return
+
       if (!canClickRef.current || lastPlayedGestureRef.current?.isRunning()) return;
       // Calculate mouse position in normalized device coordinates
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -421,12 +450,10 @@ const Emi = (props: EmiProps) => {
     onFinish
   }: LoadAndPlayAnimationParams)  => {
     // check if is overriding a gesture
-    // console.log("overriding a gesture " + !override && lastPlayedGestureRef.current && lastPlayedGestureRef.current.isRunning())
     if (!override && lastPlayedGestureRef.current && lastPlayedGestureRef.current.isRunning()) return;
     
-    if (soundRef.current){
+    if (soundRef.current && animationType == AnimationType.Gesture){
       soundRef.current.stop();
-      setIsSpeaking(false);
     }
     setLastInteractionTime(Date.now());
 
@@ -447,7 +474,6 @@ const Emi = (props: EmiProps) => {
     // to transition from gesture back to idle
     const onAnimationFinish = () => {
       mixerRef.current?.removeEventListener('finished', onAnimationFinish); // Clean up the listener
-      setIsSpeaking(false);
       if (idleAnimationFileNameRef.current){
         loadAndPlayAnimation({filename: idleAnimationFileNameRef.current, animationType: AnimationType.Idle}); // resume idle animation
       }
@@ -484,7 +510,7 @@ const Emi = (props: EmiProps) => {
     // handle sound file
     if (soundFile){
       setIsSpeaking(true);
-      soundRef.current = playSound(soundFile);
+      soundRef.current = playSound(soundFile, () => setIsSpeaking(false));
     }
     
   };
